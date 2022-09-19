@@ -3,15 +3,22 @@ from src.components.Stingray import Stingray
 from time import sleep
 import threading
 
+from src.helpers.socket_client import SocketClient
+
 raspi = pigpio.pi()
 robot = Stingray(raspi)
+client = SocketClient()
 finished = False
 
 def printSpeed():
     global finished
     while not finished:
-        print(f"Distance: {robot.getTotalDistance()} Speed: {robot.getSpeed()}")
-        sleep(0.1)
+        print(f"Distance: {robot.getTotalDistance()} LeftSpeed: {robot.getLeftWheelSpeed()}  RightSpeed: {robot.getRightWheelSpeed()}")
+        client.send({
+            "leftWheelSpeed": robot.getLeftWheelSpeed(),
+            "rightWheelSpeed": robot.getRightWheelSpeed()
+        })
+        sleep(0.25)
 
 threadPrintSpeed = threading.Thread(target=printSpeed)
 threadPrintSpeed.start()
