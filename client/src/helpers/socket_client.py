@@ -1,6 +1,6 @@
-import socket
-import os
 import json
+import os
+import socket
 
 import settings
 

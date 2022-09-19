@@ -1,8 +1,8 @@
 import asyncio
 import json
+import os
 import signal
 import socket
-import os
 import threading
 
 from decouple import config
@@ -13,7 +13,8 @@ from src.helpers.signal_handler import signal_handler
 
 
 class StingrayDaemon:
-    '''Socket Server'''
+    """Socket Server"""
+
     HEADER = settings.HEADER
     PORT = settings.PORT
     SERVER = settings.SERVER
@@ -26,6 +27,8 @@ class StingrayDaemon:
         self.device_key = device_key
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
         # Connect to Azure IoT Platform
         self.device_client = self.__start_connection()
 
@@ -34,14 +37,14 @@ class StingrayDaemon:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            device_client = loop.run_until_complete(
+            device_client = self.loop.run_until_complete(
                 azure_client(self.device_scope, self.device_id, self.device_key)
             )
         except:
             # Run the service without Internet
             print("Failed to connect to Azure")
             os._exit(1)
-        loop.close()
+        # self.loop.close()
         return device_client
 
     async def __handle_client(self, conn, addr):
@@ -65,11 +68,8 @@ class StingrayDaemon:
 
     def __call_client(self, conn, addr):
         """Function that calls the socket service coroutine"""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        loop.run_until_complete(self.__handle_client(conn, addr))
-        loop.close()
+        self.loop.run_until_complete(self.__handle_client(conn, addr))
+        self.loop.close()
 
     def start(self):
         print("[STARTING] server is starting...")
@@ -78,8 +78,7 @@ class StingrayDaemon:
         while True:
             conn, addr = self.server.accept()
             print(f"[NEW CONNECTION] {addr} connected.")
-            thread = threading.Thread(target=self.__call_client, args=(conn, addr))
-            thread.start()
+            self.__call_client(conn, addr)
 
 
 if __name__ == "__main__":
