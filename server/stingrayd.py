@@ -3,7 +3,6 @@ import json
 import os
 import signal
 import socket
-import threading
 
 from decouple import config
 
@@ -32,10 +31,12 @@ class StingrayDaemon:
         # Connect to Azure IoT Platform
         self.device_client = self.__start_connection()
 
+    def __del__(self):
+        self.loop.close()
+        self.server.close()
+
     def __start_connection(self):
         """Function that calls the Azure Client coroutine"""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
         try:
             device_client = self.loop.run_until_complete(
                 azure_client(self.device_scope, self.device_id, self.device_key)
@@ -44,7 +45,6 @@ class StingrayDaemon:
             # Run the service without Internet
             print("Failed to connect to Azure")
             os._exit(1)
-        # self.loop.close()
         return device_client
 
     async def __handle_client(self, conn, addr):
@@ -60,7 +60,9 @@ class StingrayDaemon:
                     # Send message to Azure
                     # TODO Check this function if internet shuts down
                     await self.device_client.send_message(json.dumps(msg))
-                    # await asyncio.sleep(settings.WAIT_TIME)
+                elif msg_length == '':
+                    print("Client disconnected.")
+                    break
             except:
                 break
         conn.close()
@@ -69,7 +71,6 @@ class StingrayDaemon:
     def __call_client(self, conn, addr):
         """Function that calls the socket service coroutine"""
         self.loop.run_until_complete(self.__handle_client(conn, addr))
-        self.loop.close()
 
     def start(self):
         print("[STARTING] server is starting...")
