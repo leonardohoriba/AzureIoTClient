@@ -15,8 +15,8 @@ def printSpeed():
     while not finished:
         print(f"Distance: {robot.getTotalDistance()} LeftSpeed: {robot.getLeftWheelSpeed()}  RightSpeed: {robot.getRightWheelSpeed()}")
         client.send({
-            "leftWheelSpeed": robot.getLeftWheelSpeed(),
-            "rightWheelSpeed": robot.getRightWheelSpeed()
+            "LeftWheelSpeed": robot.getLeftWheelSpeed(),
+            "RightWheelSpeed": robot.getRightWheelSpeed()
         })
         sleep(0.25)
 
