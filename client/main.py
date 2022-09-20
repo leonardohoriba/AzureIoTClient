@@ -13,12 +13,17 @@ finished = False
 def printSpeed():
     global finished
     while not finished:
-        print(f"Distance: {robot.getTotalDistance()} LeftSpeed: {robot.getLeftWheelSpeed()}  RightSpeed: {robot.getRightWheelSpeed()}")
+        print(f"Distance: {robot.getSonarDistance()}")
+        robot.triggerSonar()
         client.send({
-            "LeftWheelSpeed": robot.getLeftWheelSpeed(),
-            "RightWheelSpeed": robot.getRightWheelSpeed()
+            "leftWheelSpeed": robot.getLeftWheelSpeed(),
+            "rightWheelSpeed": robot.getRightWheelSpeed(),
+            "sonarDistance": robot.getSonarDistance()
         })
         sleep(0.25)
+
+robot.triggerSonar()
+sleep(0.1)
 
 threadPrintSpeed = threading.Thread(target=printSpeed)
 threadPrintSpeed.start()
