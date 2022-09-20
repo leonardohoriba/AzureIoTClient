@@ -1,6 +1,8 @@
 import pigpio
-from src.components.Motor import Motor
 from math import pi
+
+from src.components.Motor import Motor
+from src.components.Sonar import Sonar
 
 class Stingray():
     WHEEL_RADIUS = 56.5/2   # Measured in mm
@@ -8,6 +10,7 @@ class Stingray():
     def __init__(self, raspi):
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
+        self.sonar = Sonar(raspi, 4, 18)
 
     def moveForward(self):
         self.leftMotor.setPower(50)
@@ -39,3 +42,9 @@ class Stingray():
 
     def getRightWheelSpeed(self):
         return self.rightMotor.getCurrentSpeed()*2*pi*self.WHEEL_RADIUS/360
+
+    def triggerSonar(self):
+        self.sonar.trigger()
+
+    def getSonarDistance(self):
+        return self.sonar.getDistance()
