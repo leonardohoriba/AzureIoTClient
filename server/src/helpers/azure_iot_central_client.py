@@ -28,7 +28,7 @@ class Device:
         return conn_str
 
 
-async def azure_client(device_scope, device_id, device_key):
+async def iot_central_client(device_scope, device_id, device_key):
     # Create the device
     conn_str = await Device(device_scope, device_id, device_key).connection_string
 

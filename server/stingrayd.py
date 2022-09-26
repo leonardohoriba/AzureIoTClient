@@ -7,7 +7,7 @@ import socket
 from decouple import config
 
 import settings
-from src.helpers.azure_client import azure_client
+from src.helpers.azure_iot_hub_client import iot_hub_client
 from src.helpers.signal_handler import signal_handler
 
 
@@ -20,10 +20,7 @@ class StingrayDaemon:
     ADDR = (SERVER, PORT)
     FORMAT = settings.FORMAT
 
-    def __init__(self, device_scope, device_id, device_key) -> None:
-        self.device_scope = device_scope
-        self.device_id = device_id
-        self.device_key = device_key
+    def __init__(self) -> None:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
         self.loop = asyncio.new_event_loop()
@@ -39,7 +36,7 @@ class StingrayDaemon:
         """Function that calls the Azure Client coroutine"""
         try:
             device_client = self.loop.run_until_complete(
-                azure_client(self.device_scope, self.device_id, self.device_key)
+                iot_hub_client()
             )
         except:
             # Run the service without Internet
@@ -87,8 +84,4 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
 
     # Start socket server
-    StingrayDaemon(
-        device_scope=config("SCOPE_ID"),
-        device_id=config("DEVICE_ID"),
-        device_key=config("DEVICE_KEY"),
-    ).start()
+    StingrayDaemon().start()
