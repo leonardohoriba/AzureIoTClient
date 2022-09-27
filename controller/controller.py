@@ -15,11 +15,11 @@ from builtins import input
 # The service connection string to authenticate with your IoT hub.
 # Using the Azure CLI:
 # az iot hub show-connection-string --hub-name {your iot hub name} --policy-name service
-CONNECTION_STRING = "{Your IoT hub service connection string}"
-DEVICE_ID = "MyPythonDevice"
+CONNECTION_STRING = config("CONNECTION_STRING")
+DEVICE_ID = "Stingray29"
 
 # Details of the direct method to call.
-METHOD_NAME = "SetTelemetryInterval"
+METHOD_NAME = "SetLeftWheel"
 METHOD_PAYLOAD = "10"
 
 def iothub_devicemethod_sample_run():
