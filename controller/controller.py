@@ -11,6 +11,7 @@ from azure.iot.hub import IoTHubRegistryManager
 from azure.iot.hub.models import CloudToDeviceMethod, CloudToDeviceMethodResult
 from decouple import config
 from builtins import input
+import json
 
 # The service connection string to authenticate with your IoT hub.
 # Using the Azure CLI:
@@ -19,8 +20,7 @@ CONNECTION_STRING = config("CONNECTION_STRING")
 DEVICE_ID = "Stingray29"
 
 # Details of the direct method to call.
-METHOD_NAME = "SetLeftWheel"
-METHOD_PAYLOAD = "10"
+METHOD_NAME = "setLeftWheel"
 
 def iothub_devicemethod_sample_run():
     try:
@@ -28,7 +28,12 @@ def iothub_devicemethod_sample_run():
         registry_manager = IoTHubRegistryManager(CONNECTION_STRING)
 
         # Call the direct method.
-        deviceMethod = CloudToDeviceMethod(method_name=METHOD_NAME, payload=METHOD_PAYLOAD)
+        payload = {
+            "speed": 10,
+            "distance": 20,
+        }
+        encodedPayload = json.dumps(payload).encode("utf-8")
+        deviceMethod = CloudToDeviceMethod(method_name=METHOD_NAME, payload=encodedPayload)
         response = registry_manager.invoke_device_method(DEVICE_ID, deviceMethod)
 
         print ( "" )
