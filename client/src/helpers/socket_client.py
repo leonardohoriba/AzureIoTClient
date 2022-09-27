@@ -23,7 +23,7 @@ class SocketClient:
             os._exit(1)
 
     def send(self, msg: dict) -> None:
-        """Function to send a json message to Azure IoT Central"""
+        """Function to send a json message to Socket Server"""
         message = json.dumps(msg).encode(self.FORMAT)
         msg_length = len(message)
         send_length = str(msg_length).encode(self.FORMAT)
@@ -43,3 +43,14 @@ class SocketClient:
                 print(f"[NEW CONNECTION] {self.ADDR}")
             except:
                 pass
+    
+    # def listen_server(self):
+    #     """Receive a json message from Server."""
+    #     while True:
+    #         try:
+    #             msg = self.client.recv(self.HEADER).decode(self.FORMAT)
+    #             print(msg)
+    #         except:
+    #             break
+    #     self.client.close()
+    #     print(f"[DISCONNECTED].")

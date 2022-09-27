@@ -9,7 +9,7 @@ from decouple import config
 import settings
 from src.helpers.azure_iot_hub_client import iot_hub_client
 from src.helpers.signal_handler import signal_handler
-
+from src.helpers.direct_method_client import DirectMethodClient
 
 class StingrayDaemon:
     """Socket Server"""
@@ -45,7 +45,7 @@ class StingrayDaemon:
         return device_client
 
     async def __handle_client(self, conn, addr):
-        """Receive a json message from Client and send to Azure IoT Central"""
+        """Receive a json message from Client and send to Azure IoT Hub"""
         while True:
             try:
                 msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
@@ -56,7 +56,7 @@ class StingrayDaemon:
                     print(f"Sending data:\n{msg}")
                     # Send message to Azure
                     # TODO Check this function if internet shuts down
-                    await self.device_client.send_message(json.dumps(msg))
+                    # await self.device_client.send_message(json.dumps(msg))
                 elif msg_length == '':
                     print("Client disconnected.")
                     break
@@ -76,8 +76,11 @@ class StingrayDaemon:
         while True:
             conn, addr = self.server.accept()
             print(f"[NEW CONNECTION] {addr} connected.")
+            # Send message to Azure IoT Hub
             self.__call_client(conn, addr)
-
+            # # Send direct methods to socket client
+            # direct_message = DirectMethodClient(self.server).getClient()
+            # pass
 
 if __name__ == "__main__":
     # Daemon SIGTERM
