@@ -39,7 +39,7 @@ def iothub_devicemethod_sample_run():
         print ( "" )
         print ( "Device Method called" )
         print ( "Device Method name       : {0}".format(METHOD_NAME) )
-        print ( "Device Method payload    : {0}".format(METHOD_PAYLOAD) )
+        print ( "Device Method payload    : {0}".format(deviceMethod) )
         print ( "" )
         print ( "Response status          : {0}".format(response.status) )
         print ( "Response payload         : {0}".format(response.payload) )
