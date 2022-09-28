@@ -8,8 +8,9 @@ from decouple import config
 
 import settings
 from src.helpers.azure_iot_hub_client import iot_hub_client
-from src.helpers.signal_handler import signal_handler
 from src.helpers.direct_method_client import DirectMethodClient
+from src.helpers.signal_handler import signal_handler
+
 
 class StingrayDaemon:
     """Socket Server"""
@@ -27,6 +28,8 @@ class StingrayDaemon:
         asyncio.set_event_loop(self.loop)
         # Connect to Azure IoT Platform
         self.device_client = self.__start_connection()
+        # Connect to IoT Hub direct methods
+        self.direct_method_client = DirectMethodClient(device_client=self.device_client)
 
     def __del__(self):
         self.loop.close()
@@ -35,9 +38,7 @@ class StingrayDaemon:
     def __start_connection(self):
         """Function that calls the Azure Client coroutine"""
         try:
-            device_client = self.loop.run_until_complete(
-                iot_hub_client()
-            )
+            device_client = self.loop.run_until_complete(iot_hub_client())
         except:
             # Run the service without Internet
             print("Failed to connect to Azure")
@@ -57,7 +58,7 @@ class StingrayDaemon:
                     # Send message to Azure
                     # TODO Check this function if internet shuts down
                     # await self.device_client.send_message(json.dumps(msg))
-                elif msg_length == '':
+                elif msg_length == "":
                     print("Client disconnected.")
                     break
             except:
@@ -76,11 +77,11 @@ class StingrayDaemon:
         while True:
             conn, addr = self.server.accept()
             print(f"[NEW CONNECTION] {addr} connected.")
+            # Set conn to send message to the robot
+            self.direct_method_client.setSocketConnection(conn)
             # Send message to Azure IoT Hub
             self.__call_client(conn, addr)
-            # # Send direct methods to socket client
-            # direct_message = DirectMethodClient(self.server).getClient()
-            # pass
+
 
 if __name__ == "__main__":
     # Daemon SIGTERM
