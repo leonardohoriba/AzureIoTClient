@@ -13,21 +13,29 @@ finished = False
 def printSpeed():
     global finished
     while not finished:
-        print(f"Distance: {robot.getSonarDistance()}")
-        robot.triggerSonar()
+        # print(f"Distance: {robot.getSonarDistance()}")
+        # robot.triggerSonar()
         client.send({
             "leftWheelSpeed": robot.getLeftWheelSpeed(),
             "rightWheelSpeed": robot.getRightWheelSpeed(),
             "sonarDistance": robot.getSonarDistance()
         })
-        sleep(0.25)
+        sleep(0.001)
 
 robot.triggerSonar()
 sleep(0.1)
 
 threadPrintSpeed = threading.Thread(target=printSpeed)
 threadPrintSpeed.start()
-
+robot.stop()
+sleep(2)
+for i in range(500):
+    robot.moveToPosition(0)
+    sleep(0.01)
+for i in range(500):
+    robot.moveToPosition(180)
+    sleep(0.01)
+"""
 sleep(5)
 robot.moveForward()
 sleep(5)
@@ -37,5 +45,6 @@ robot.moveForward()
 sleep(5)
 robot.stop()
 sleep(5)
+"""
 finished = True
 threadPrintSpeed.join()

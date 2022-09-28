@@ -12,17 +12,20 @@ class Stingray():
         self.rightMotor = Motor(raspi, 27, 24)
         self.sonar = Sonar(raspi, 4, 18)
 
+    def moveToPosition(self, position):
+        self.rightMotor.setGoalTheta(position)
+
     def moveForward(self):
-        self.leftMotor.setPower(50)
-        self.rightMotor.setPower(-50)
+        self.leftMotor.setSpeed(100)
+        self.rightMotor.setSpeed(-100)
 
     def moveRight(self):
-        self.leftMotor.setPower(50)
-        self.rightMotor.setPower(50)
+        self.leftMotor.setSpeed(100)
+        self.rightMotor.setSpeed(100)
 
     def stop(self):
-        self.leftMotor.setPower(0)
-        self.rightMotor.setPower(0)
+        self.leftMotor.setSpeed(0)
+        self.rightMotor.setSpeed(0)
 
     def getTotalDistance(self):
         return self.rightMotor.getCurrentTheta()*2*pi*self.WHEEL_RADIUS/360
