@@ -22,21 +22,18 @@ class Stingray():
         del self.sonar
         self._raspi.stop()
 
-    def moveToPosition(self, position):
-        self.rightMotor.setGoalTheta(position)
-        self.leftMotor.setGoalTheta(position)
+    def moveToPosition(self, position, speed):
+        self.leftMotor.setGoal(-position*360/(2*pi*self.WHEEL_RADIUS), speed*360/(2*pi*self.WHEEL_RADIUS))
+        self.rightMotor.setGoal(position*360/(2*pi*self.WHEEL_RADIUS), speed*360/(2*pi*self.WHEEL_RADIUS))
 
     def moveForward(self):
-        self.leftMotor.setSpeed(100)
-        self.rightMotor.setSpeed(-100)
+        pass
 
     def moveRight(self):
-        self.leftMotor.setSpeed(100)
-        self.rightMotor.setSpeed(100)
+        pass
 
     def stop(self):
-        self.leftMotor.setSpeed(0)
-        self.rightMotor.setSpeed(0)
+        pass
 
     def getTotalDistance(self):
         return self.rightMotor.getCurrentTheta()*2*pi*self.WHEEL_RADIUS/360
@@ -49,13 +46,13 @@ class Stingray():
 
     def getSpeed(self):
         # Maybe a mean of the two values?
-        return self.rightMotor.getCurrentSpeed()*2*pi*self.WHEEL_RADIUS/360
+        return self.rightMotor.getCurrentOmega()*2*pi*self.WHEEL_RADIUS/360
 
     def getLeftWheelSpeed(self):
-        return -self.leftMotor.getCurrentSpeed()*2*pi*self.WHEEL_RADIUS/360
+        return -self.leftMotor.getCurrentOmega()*2*pi*self.WHEEL_RADIUS/360
 
     def getRightWheelSpeed(self):
-        return self.rightMotor.getCurrentSpeed()*2*pi*self.WHEEL_RADIUS/360
+        return self.rightMotor.getCurrentOmega()*2*pi*self.WHEEL_RADIUS/360
 
     def triggerSonar(self):
         self.sonar.trigger()

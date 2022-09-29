@@ -19,7 +19,7 @@ class Encoder():
         self._raspi = raspi
         self._numTurns = 0
         self._pulseWidth = 0
-        self._currentSpeed = 0   # Measured in degrees per second
+        self._currentOmega = 0   # Measured in degrees per second
         self._currentTheta = 0   # Measured in degrees
         self._angle = 0
         self._startTime = time.time()
@@ -38,7 +38,7 @@ class Encoder():
             self._lastTheta = self._angleFIFO.get()
             self._currentTheta = (self._numTurns*360 + self._angle)
             self._angleFIFO.put(self._currentTheta)
-            self._currentSpeed = (self._currentTheta - self._lastTheta)/self.SPEED_PERIOD   #Period in seconds
+            self._currentOmega = (self._currentTheta - self._lastTheta)/self.SPEED_PERIOD   #Period in seconds
         else:
             # Falling edge
             self.lastPulseWidth = self._pulseWidth
@@ -56,6 +56,6 @@ class Encoder():
         # Theta in degrees
         return self._currentTheta
         
-    def getCurrentSpeed(self):
+    def getCurrentOmega(self):
         # Speed in degrees per second
-        return self._currentSpeed
+        return self._currentOmega
