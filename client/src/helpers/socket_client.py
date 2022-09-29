@@ -34,7 +34,8 @@ class SocketClient:
                 if msg_length:
                     msg_length = int(msg_length)
                     # Receive message from Stingrayd
-                    msg = json.loads(conn.recv(msg_length).decode(self.FORMAT))
+                    message = conn.recv(msg_length).decode(self.FORMAT)
+                    msg = json.loads(message)
                     print(f"Direct method received:\n{msg}")
                     # Put message in direct method queue
                     self.direct_method.put(msg)

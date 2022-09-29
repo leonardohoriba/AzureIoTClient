@@ -16,22 +16,25 @@ import json
 # The service connection string to authenticate with your IoT hub.
 # Using the Azure CLI:
 # az iot hub show-connection-string --hub-name {your iot hub name} --policy-name service
-CONNECTION_STRING = config("CONNECTION_STRING")
+AZURE_IOT_HUB_CONNECTION_STRING = config("AZURE_IOT_HUB_CONNECTION_STRING")
 DEVICE_ID = "Stingray29"
 
 # Details of the direct method to call.
-METHOD_NAME = "setLeftWheel"
+METHOD_NAME = "setMovement"
 
 def iothub_devicemethod_sample_run():
     try:
         # Create IoTHubRegistryManager
-        registry_manager = IoTHubRegistryManager(CONNECTION_STRING)
+        registry_manager = IoTHubRegistryManager(AZURE_IOT_HUB_CONNECTION_STRING)
 
         # Call the direct method.
         payload = {
-            "speed": 10,
-            "distance": 20,
-        }
+        "leftSpeed": 10, 
+        "leftDistance": 20, 
+        "rightSpeed": 30, 
+        "rightDistance": 40
+}
+
         encodedPayload = json.dumps(payload).encode("utf-8")
         deviceMethod = CloudToDeviceMethod(method_name=METHOD_NAME, payload=encodedPayload)
         response = registry_manager.invoke_device_method(DEVICE_ID, deviceMethod)
@@ -56,7 +59,5 @@ def iothub_devicemethod_sample_run():
 
 if __name__ == '__main__':
     print ( "IoT Hub Python quickstart #2..." )
-    print ( "    Connection string = {0}".format(CONNECTION_STRING) )
-    print ( "    Device ID         = {0}".format(DEVICE_ID) )
 
     iothub_devicemethod_sample_run()

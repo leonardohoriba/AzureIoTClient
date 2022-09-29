@@ -1,9 +1,8 @@
 import json
 import socket
+from ast import literal_eval
 
 from azure.iot.device import MethodResponse
-from azure.iot.device.aio import IoTHubDeviceClient
-from decouple import config
 
 import settings
 
@@ -38,9 +37,11 @@ class DirectMethodClient:
         if method_request.name == "setMovement":
             try:
                 self.payload = method_request.payload
+                msg = json.loads(literal_eval(self.payload))
+                print(f"Direct Message:\n{msg}")
                 # Send payload to socket client (robot)
                 if self.conn:
-                    self.__socket_send_message(msg=self.payload)
+                    self.__socket_send_message(msg)
                 else:
                     print("[Error] Set a socket connection in DirectMethodClient.")
             except ValueError:
@@ -79,5 +80,5 @@ class DirectMethodClient:
             print("Lost direct method connection to socket.")
             self.conn = None
             print("[CONNECTION CLOSED] Direct method socket.")
-        except:
-            print("The Robot socket is offline.")
+        except Exception as ex:
+            print(ex)

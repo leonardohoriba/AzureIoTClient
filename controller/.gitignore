@@ -167,6 +167,27 @@ cython_debug/
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+# Libraries
+*.lvlibp
+*.llb
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+
+# Metadata
+*.aliases
+*.lvlps
+.cache/
+
+# Workspace
+.code-workspace
+
 # Debug
 debug.py
 debug.ipynb
