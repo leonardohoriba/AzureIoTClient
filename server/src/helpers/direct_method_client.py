@@ -36,8 +36,8 @@ class DirectMethodClient:
         # Define methods
         if method_request.name == "setMovement":
             try:
-                self.payload = method_request.payload
-                msg = json.loads(literal_eval(self.payload))
+                payload = json.loads(literal_eval(method_request.payload))
+                msg = {"method_name": method_request.name, "payload": payload}
                 print(f"Direct Message:\n{msg}")
                 # Send payload to socket client (robot)
                 if self.conn:
