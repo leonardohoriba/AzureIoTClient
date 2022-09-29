@@ -1,11 +1,13 @@
-from src.components.Encoder import Encoder
 import threading
 from time import sleep
 
-class Motor():
+from src.components.Encoder import Encoder
+
+
+class Motor:
 
     _NUM_INTEGRAL_TERMS = 20
-    _error = [0]*_NUM_INTEGRAL_TERMS
+    _error = [0] * _NUM_INTEGRAL_TERMS
     _goalTheta = 0
     _goalOmega = 0
     _currentGoalTheta = 0
@@ -19,13 +21,13 @@ class Motor():
         self.threadSpeed = threading.Thread(target=self.__speed)
         self.threadControl.start()
         self.threadSpeed.start()
-    
+
     def deinit(self):
         self._finished = True
         self.threadControl.join()
         self.__setPower(0)
-        del self.encoder 
-    
+        del self.encoder
+
     def setGoal(self, theta, omega):
         # Omega in absolute value
         self._goalTheta = theta
@@ -36,11 +38,15 @@ class Motor():
         if power == 0:
             self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1500)
         elif power > 0 and power <= 100:
-            self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1520+power*200/100)
+            self.raspi.set_servo_pulsewidth(
+                self.motorOutputPin, 1520 + power * 200 / 100
+            )
         elif power > 100:
             self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1720)
         elif power < 0 and power >= -100:
-            self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1480+power*200/100)
+            self.raspi.set_servo_pulsewidth(
+                self.motorOutputPin, 1480 + power * 200 / 100
+            )
         elif power < -100:
             self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1280)
 
@@ -58,7 +64,7 @@ class Motor():
                 self._currentGoalTheta -= 1
             # Bad implementation, imposees a minimum speed of 10
             if self._goalOmega > 10:
-                sleep(1/self._goalOmega)
+                sleep(1 / self._goalOmega)
             else:
                 sleep(0.1)
 
@@ -68,12 +74,23 @@ class Motor():
             ki = 0
             kd = 0
             for i in range(self._NUM_INTEGRAL_TERMS - 1):
-                self._error[i] = self._error[i+1]
-            self._error[self._NUM_INTEGRAL_TERMS - 1] = self._currentGoalTheta - self.getCurrentTheta()
-            derror = self._error[self._NUM_INTEGRAL_TERMS - 1] - self._error[self._NUM_INTEGRAL_TERMS - 2]
+                self._error[i] = self._error[i + 1]
+            self._error[self._NUM_INTEGRAL_TERMS - 1] = (
+                self._currentGoalTheta - self.getCurrentTheta()
+            )
+            derror = (
+                self._error[self._NUM_INTEGRAL_TERMS - 1]
+                - self._error[self._NUM_INTEGRAL_TERMS - 2]
+            )
             ierror = 0
             for i in range(self._NUM_INTEGRAL_TERMS):
-                ierror += self._error[self._NUM_INTEGRAL_TERMS - (i+1)] * (1-(i/self._NUM_INTEGRAL_TERMS))
-            power = kp*self._error[self._NUM_INTEGRAL_TERMS - 1] + ki*ierror + kd*derror
+                ierror += self._error[self._NUM_INTEGRAL_TERMS - (i + 1)] * (
+                    1 - (i / self._NUM_INTEGRAL_TERMS)
+                )
+            power = (
+                kp * self._error[self._NUM_INTEGRAL_TERMS - 1]
+                + ki * ierror
+                + kd * derror
+            )
             self.__setPower(power)
             sleep(0.025)

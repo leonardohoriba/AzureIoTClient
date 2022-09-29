@@ -1,26 +1,38 @@
-import pigpio
-from src.components.Stingray import Stingray
-from time import sleep
 import threading
+from time import sleep
 
+import pigpio
+from decouple import config
+
+from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
 
+DEBUG_PID = config("DEBUG_PID", default=False)
 raspi = pigpio.pi()
 robot = Stingray(raspi)
 client = SocketClient()
 finished = False
 
+
 def printSpeed():
     global finished
     while not finished:
-        # print(f"Distance: {robot.getSonarDistance()}")
-        # robot.triggerSonar()
-        client.send({
-            "leftWheelSpeed": robot.getLeftWheelSpeed(),
-            "rightWheelSpeed": robot.getRightWheelSpeed(),
-            "sonarDistance": robot.getSonarDistance()
-        })
-        sleep(0.001)
+        # PID calibration doesn't need sonar and needs higher sample rate
+        if not DEBUG_PID:
+            print(f"Distance: {robot.getSonarDistance()}")
+            robot.triggerSonar()
+        client.send(
+            {
+                "leftWheelSpeed": robot.getLeftWheelSpeed(),
+                "rightWheelSpeed": robot.getRightWheelSpeed(),
+                "sonarDistance": robot.getSonarDistance(),
+            }
+        )
+        if DEBUG_PID:
+            sleep(0.01)
+        else:
+            sleep(0.25)
+
 
 robot.triggerSonar()
 sleep(0.1)
