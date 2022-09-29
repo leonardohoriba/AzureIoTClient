@@ -13,15 +13,21 @@ class Sonar():
     SOUND_SPEED = 340.0
     MAX_ECHO_PULSE_WIDTH = 30000
 
-    def __init__(self, raspi, trigPin, echoPin):
+    def __init__(self, raspi, trigPin, echoPin, motorPin):
         self._raspi = raspi
         self._trigPin = trigPin
         self._echoPin = echoPin
+        self._motorPin = motorPin
         self._startTime = 0
         self._deltaTime = 0
-        self._raspi.set_mode(trigPin, pigpio.OUTPUT, )
+        self._raspi.set_mode(trigPin, pigpio.OUTPUT)
         self._raspi.set_mode(echoPin, pigpio.INPUT)
+        self._raspi.set_mode(motorPin, pigpio.OUTPUT)
         self._raspi.callback(echoPin, pigpio.EITHER_EDGE, self.__gpio_callback)
+
+    def deinit(self):
+        # Stop the servo
+        self._raspi.set_servo_pulsewidth(self._motorPin, 0)
 
     def __gpio_callback(self, GPIO, level, tick):
         if level:
@@ -40,3 +46,7 @@ class Sonar():
             return -1
         else:
             return self._deltaTime*self.SOUND_SPEED/(1000*2)
+
+    def setAngle(self, angle):
+        if angle >= -100 and angle <= 100:
+            self._raspi.set_servo_pulsewidth(self._motorPin, 1520 + angle*900/90)

@@ -28,12 +28,13 @@ sleep(0.1)
 threadPrintSpeed = threading.Thread(target=printSpeed)
 threadPrintSpeed.start()
 robot.stop()
+robot.setSonarAngle(0)
 sleep(2)
-for i in range(500):
-    robot.moveToPosition(0)
+for i in range(360):
+    robot.moveToPosition(i)
     sleep(0.01)
-for i in range(500):
-    robot.moveToPosition(180)
+for i in range(360):
+    robot.moveToPosition(360-i)
     sleep(0.01)
 """
 sleep(5)
@@ -43,8 +44,10 @@ robot.moveRight()
 sleep(5)
 robot.moveForward()
 sleep(5)
-robot.stop()
+robot.stop() 
 sleep(5)
 """
 finished = True
 threadPrintSpeed.join()
+robot.deinit()
+del robot

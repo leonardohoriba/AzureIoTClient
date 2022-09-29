@@ -8,12 +8,23 @@ class Stingray():
     WHEEL_RADIUS = 56.5/2   # Measured in mm
 
     def __init__(self, raspi):
+        self._raspi = raspi
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
-        self.sonar = Sonar(raspi, 4, 18)
+        self.sonar = Sonar(raspi, 4, 18, 25)
+
+    def deinit(self):
+        self.leftMotor.deinit()
+        self.rightMotor.deinit()
+        self.sonar.deinit()
+        del self.leftMotor
+        del self.rightMotor
+        del self.sonar
+        self._raspi.stop()
 
     def moveToPosition(self, position):
         self.rightMotor.setGoalTheta(position)
+        self.leftMotor.setGoalTheta(position)
 
     def moveForward(self):
         self.leftMotor.setSpeed(100)
@@ -51,3 +62,6 @@ class Stingray():
 
     def getSonarDistance(self):
         return self.sonar.getDistance()
+
+    def setSonarAngle(self, angle):
+        self.sonar.setAngle(angle)
