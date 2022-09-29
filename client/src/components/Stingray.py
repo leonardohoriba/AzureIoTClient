@@ -1,4 +1,5 @@
 from math import pi
+from time import sleep
 
 import pigpio
 
@@ -25,6 +26,7 @@ class Stingray:
         self._raspi.stop()
 
     def movePositionSpeed(self, leftPosition, leftSpeed, rightPosition, rightSpeed):
+        # Non-blocking function
         # Motors mirrored, so one of them must go backwards
         self.leftMotor.setGoal(
             -leftPosition * 360 / (2 * pi * self.WHEEL_RADIUS),
@@ -42,7 +44,12 @@ class Stingray:
         pass
 
     def stop(self):
-        pass
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+    def waitUntilGoal(self):
+        while self.leftMotor.getMoving() or self.rightMotor.getMoving():
+            sleep(0.01)
 
     def getTotalDistance(self):
         return self.rightMotor.getCurrentTheta() * 2 * pi * self.WHEEL_RADIUS / 360
