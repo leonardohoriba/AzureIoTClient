@@ -1,6 +1,7 @@
 import json
 import os
 import socket
+import queue
 
 import settings
 
@@ -14,16 +15,39 @@ class SocketClient:
 
     def __init__(self) -> None:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.direct_method = queue.Queue()
         try:
             self.client.connect(self.ADDR)
+            self.__listen_stingrayd(self.client, self.ADDR)
             print(f"[NEW CONNECTION] {self.ADDR}")
         except ConnectionRefusedError:
             # Socket Server (Stingrayd) is offline when SocketClient starts.
             print("Socket Server offline.")
             os._exit(1)
 
+        
+    def __listen_stingrayd(self, conn, addr):
+        """Receive a direct method from stingrayd."""
+        while True:
+            try:
+                msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
+                if msg_length:
+                    msg_length = int(msg_length)
+                    # Receive message from Stingrayd
+                    msg = json.loads(conn.recv(msg_length).decode(self.FORMAT))
+                    print(f"Direct method received:\n{msg}")
+                    # Put message in direct method queue
+                    self.direct_method.put(msg)
+                elif msg_length == '':
+                    print("Stingrayd disconnected.")
+                    break
+            except:
+                break
+        conn.close()
+        print(f"[Error] Stingrayd disconnected: {addr}.")
+
     def send(self, msg: dict) -> None:
-        """Function to send a json message to Azure IoT Central"""
+        """Function to send a json message to Socket Server"""
         message = json.dumps(msg).encode(self.FORMAT)
         msg_length = len(message)
         send_length = str(msg_length).encode(self.FORMAT)
@@ -40,6 +64,7 @@ class SocketClient:
             try:
                 self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client.connect(self.ADDR)
+                self.__listen_stingrayd(self.client, self.ADDR)
                 print(f"[NEW CONNECTION] {self.ADDR}")
             except:
                 pass
