@@ -186,7 +186,7 @@ cython_debug/
 .cache/
 
 # Workspace
-.code-workspace
+controller.code-workspace
 
 # Debug
 debug.py
