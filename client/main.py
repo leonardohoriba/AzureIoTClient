@@ -49,4 +49,6 @@ sleep(5)
 finished = True
 threadPrintSpeed.join()
 robot.deinit()
+client.deinit()
 del robot
+del client
