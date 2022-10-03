@@ -34,29 +34,23 @@ class DirectMethodClient:
     # Define a method request handler
     async def __method_request_handler(self, method_request):
         # Define methods
-        if method_request.name == "setMovement":
-            try:
-                payload = json.loads(literal_eval(method_request.payload))
-                msg = {"method_name": method_request.name, "payload": payload}
-                print(f"Direct Message:\n{msg}")
-                # Send payload to socket client (robot)
-                if self.conn:
-                    self.__socket_send_message(msg)
-                else:
-                    print("[Error] Set a socket connection in DirectMethodClient.")
-            except ValueError:
-                response_payload = {"Response": "Invalid parameter"}
-                response_status = 400
+        try:
+            payload = json.loads(literal_eval(method_request.payload))
+            msg = {"method_name": method_request.name, "payload": payload}
+            print(f"Direct Message:\n{msg}")
+            # Send payload to socket client (robot)
+            if self.conn:
+                self.__socket_send_message(msg)
             else:
-                response_payload = {
-                    "Response": f"Executed direct method {method_request.name}"
-                }
-                response_status = 200
+                print("[Error] Set a socket connection in DirectMethodClient.")
+        except ValueError:
+            response_payload = {"Response": "Invalid parameter"}
+            response_status = 400
         else:
             response_payload = {
-                "Response": f"Direct method {method_request.name} not defined"
+                "Response": f"Executed direct method {method_request.name}"
             }
-            response_status = 404
+            response_status = 200
 
         method_response = MethodResponse.create_from_method_request(
             method_request, response_status, response_payload
