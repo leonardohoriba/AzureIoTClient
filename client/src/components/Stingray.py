@@ -15,6 +15,8 @@ class Stingray:
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
         self.sonar = Sonar(raspi, 4, 18, 25)
+        self.leftPosition = 0
+        self.rightPosition = 0
 
     def deinit(self):
         self.leftMotor.deinit()
@@ -25,13 +27,23 @@ class Stingray:
         del self.sonar
         self._raspi.stop()
 
+    def moveDistanceSpeed(self, leftDistance, leftSpeed, rightDistance, rightSpeed):
+        self.movePositionSpeed(
+            self.leftPosition + leftDistance,
+            leftSpeed,
+            self.rightPosition + rightDistance,
+            rightSpeed
+        )
+
     def movePositionSpeed(self, leftPosition, leftSpeed, rightPosition, rightSpeed):
         # Non-blocking function
         # Motors mirrored, so one of them must go backwards
+        self.leftPosition = leftPosition
         self.leftMotor.setGoal(
             -leftPosition * 360 / (2 * pi * self.WHEEL_RADIUS),
             leftSpeed * 360 / (2 * pi * self.WHEEL_RADIUS),
         )
+        self.rightPosition = rightPosition
         self.rightMotor.setGoal(
             rightPosition * 360 / (2 * pi * self.WHEEL_RADIUS),
             rightSpeed * 360 / (2 * pi * self.WHEEL_RADIUS),

@@ -39,27 +39,6 @@ class SocketClient:
         self.client.shutdown(socket.SHUT_RDWR)
         self.threadDirectMethod.join()
 
-    def __listen_stingrayd(self, conn, addr):
-        """Receive a direct method from stingrayd."""
-        while not self._finished:
-            try:
-                msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
-                if msg_length:
-                    msg_length = int(msg_length)
-                    # Receive message from Stingrayd
-                    message = conn.recv(msg_length).decode(self.FORMAT)
-                    msg = json.loads(message)
-                    print(f"Direct method received:\n{msg}")
-                    # Put message in direct method queue
-                    self.direct_method.put(msg)
-                elif msg_length == "":
-                    print("Stingrayd disconnected.")
-                    break
-            except:
-                break
-        conn.close()
-        print(f"[Error] Stingrayd disconnected: {addr}.")
-
     def send(self, msg: dict) -> None:
         """Function to send a json message to Socket Server"""
         message = json.dumps(msg).encode(self.FORMAT)
@@ -82,3 +61,27 @@ class SocketClient:
                 print(f"[NEW CONNECTION] {self.ADDR}")
             except:
                 pass
+
+    def getFromQueue(self):
+        return self.direct_method.get(block=False)
+
+    def __listen_stingrayd(self, conn, addr):
+        """Receive a direct method from stingrayd."""
+        while not self._finished:
+            try:
+                msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
+                if msg_length:
+                    msg_length = int(msg_length)
+                    # Receive message from Stingrayd
+                    message = conn.recv(msg_length).decode(self.FORMAT)
+                    msg = json.loads(message)
+                    print(f"Direct method received:\n{msg}")
+                    # Put message in direct method queue
+                    self.direct_method.put(msg)
+                elif msg_length == "":
+                    print("Stingrayd disconnected.")
+                    break
+            except:
+                break
+        conn.close()
+        print(f"[Error] Stingrayd disconnected: {addr}.")
