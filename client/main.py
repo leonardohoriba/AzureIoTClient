@@ -1,9 +1,10 @@
 import threading
+from queue import Empty
 from time import sleep
 
 import pigpio
 from decouple import config
-from queue import Empty
+
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
 

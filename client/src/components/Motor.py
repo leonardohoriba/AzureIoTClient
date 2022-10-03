@@ -5,7 +5,7 @@ from src.components.Encoder import Encoder
 
 
 class Motor:
-    
+
     _NUM_INTEGRAL_TERMS = 20
     _error = [0] * _NUM_INTEGRAL_TERMS
     _goalTheta = 0
@@ -18,8 +18,12 @@ class Motor:
         self.raspi = raspi
         self.encoder = Encoder(raspi, encoderInputPin)
         self.motorOutputPin = motorOutputPin
-        self.threadControl = threading.Thread(target=self.__control, name="control " + str(motorOutputPin))
-        self.threadSpeed = threading.Thread(target=self.__speed, name="speed " + str(motorOutputPin))
+        self.threadControl = threading.Thread(
+            target=self.__control, name="control " + str(motorOutputPin)
+        )
+        self.threadSpeed = threading.Thread(
+            target=self.__speed, name="speed " + str(motorOutputPin)
+        )
         self.threadControl.start()
         self.threadSpeed.start()
 

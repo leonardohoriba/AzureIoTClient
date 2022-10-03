@@ -32,7 +32,7 @@ class Stingray:
             self.leftPosition + leftDistance,
             leftSpeed,
             self.rightPosition + rightDistance,
-            rightSpeed
+            rightSpeed,
         )
 
     def movePositionSpeed(self, leftPosition, leftSpeed, rightPosition, rightSpeed):
