@@ -1,5 +1,6 @@
 class MethodName:
     SET_MOVEMENT = "setMovement"
+    DISCONNECT = "disconnect"
 
 
 class DeviceID:
