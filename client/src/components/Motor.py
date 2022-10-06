@@ -30,6 +30,7 @@ class Motor:
     def deinit(self):
         self._finished = True
         self.threadControl.join()
+        self.threadSpeed.join()
         self.__setPower(0)
         del self.encoder
 
