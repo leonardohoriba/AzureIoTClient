@@ -1,21 +1,25 @@
-from picamera2 import Picamera2
-import cv2 as cv
-import subprocess
-import prctl
 import signal
+import subprocess
 import threading
-from time import sleep
+
+import cv2 as cv
+import prctl
+from decouple import config
+from picamera2 import Picamera2
+
 
 class Camera:
     FFMPEG_COMMAND = [
         "ffmpeg",
         "-thread_queue_size",
-        "8",
+        "1",
         "-re",
         "-f",
         "rawvideo",
         "-pix_fmt",
         "bgr24",
+        "-r",
+        "25",
         "-s",
         "640x480",
         "-i",
@@ -40,7 +44,6 @@ class Camera:
         "experimental",
         "-vcodec",
         "h264",
-        # "h264_v4l2m2m",
         "-pix_fmt",
         "yuv420p",
         "-g",
@@ -52,7 +55,7 @@ class Camera:
         "-preset",
         "ultrafast",
         "-r",
-        "30",
+        "25",
         "-f",
         "flv",
         "rtmp://x.rtmp.youtube.com/live2/ect7-wqu9-tpce-qp22-d81u",
@@ -74,12 +77,17 @@ class Camera:
         self.threadCamera.join()
 
     def startStreaming(self):
-        self.pipe = subprocess.Popen(
-            self.FFMPEG_COMMAND,
-            stdin=subprocess.PIPE,
-            preexec_fn=lambda: prctl.set_pdeathsig(signal.SIGKILL),
+        with open(config("FFMPEG_LOG", default="/dev/null"), "a") as ffmpeglog:
+            self.pipe = subprocess.Popen(
+                self.FFMPEG_COMMAND,
+                stdin=subprocess.PIPE,
+                stdout=ffmpeglog,
+                stderr=subprocess.STDOUT,
+                preexec_fn=lambda: prctl.set_pdeathsig(signal.SIGKILL),
+            )
+        self.threadStreaming = threading.Thread(
+            target=self.__streaming, name="streaming"
         )
-        self.threadStreaming = threading.Thread(target=self.__streaming, name="streaming")
         self.threadStreaming.start()
 
     def __camera(self):
@@ -89,8 +97,6 @@ class Camera:
             # cv.imshow("frame", self._frame)
             if cv.waitKey(1) == ord("q"):
                 break
-            # if self._streaming:
-            #     self.pipe.stdin.write(self._frame.tostring())
 
     def __streaming(self):
         while not self._finished:

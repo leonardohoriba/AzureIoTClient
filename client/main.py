@@ -5,15 +5,15 @@ from time import sleep
 import pigpio
 from decouple import config
 
+from src.components.Camera import Camera
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
-from src.components.Camera import Camera
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
 robot = Stingray(raspi)
 camera = Camera()
-sleep(0.1)  # Must wait for the first frame to be captured before starting stream
+sleep(0.5)  # Must wait for the first frame to be captured before starting stream
 camera.startStreaming()
 client = SocketClient()
 finished = False
