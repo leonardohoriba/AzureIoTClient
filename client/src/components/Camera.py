@@ -75,6 +75,7 @@ class Camera:
     def deinit(self):
         self._finished = True
         self.threadCamera.join()
+        self.threadStreaming.join()
 
     def startStreaming(self):
         with open(config("FFMPEG_LOG", default="/dev/null"), "a") as ffmpeglog:
