@@ -37,6 +37,7 @@ def sendTelemetry():
         else:
             sleep(0.25)
 
+
 def main():
     global raspi
     global robot
@@ -79,6 +80,7 @@ def main():
     del camera
     del robot
     del client
+
 
 if __name__ == "__main__":
     main()

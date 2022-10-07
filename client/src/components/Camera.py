@@ -6,6 +6,7 @@ import cv2 as cv
 import prctl
 from decouple import config
 from picamera2 import Picamera2
+
 import settings
 
 
