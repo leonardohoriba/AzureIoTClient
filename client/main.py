@@ -19,9 +19,7 @@ client = SocketClient()
 finished = False
 
 
-def printSpeed():
-    global finished
-    global DEBUG_PID
+def sendTelemetry():
     while not finished:
         # PID calibration doesn't need sonar and needs higher sample rate
         if not DEBUG_PID:
@@ -39,40 +37,48 @@ def printSpeed():
         else:
             sleep(0.25)
 
+def main():
+    global raspi
+    global robot
+    global camera
+    global client
+    global finished
+    robot.triggerSonar()
+    sleep(0.1)
 
-robot.triggerSonar()
-sleep(0.1)
+    robot.stop()
+    robot.setSonarAngle(0)
+    sleep(2)
 
-robot.stop()
-robot.setSonarAngle(0)
-sleep(2)
+    threadSendTelemetry = threading.Thread(target=sendTelemetry, name="sendTelemetry")
+    threadSendTelemetry.start()
 
-threadSendTelemetry = threading.Thread(target=printSpeed, name="sendTelemetry")
-threadSendTelemetry.start()
+    while True:
+        try:
+            instruction = client.getFromQueue()
+        except Empty:
+            sleep(0.01)
+            continue
+        if instruction["method_name"] == "setMovement":
+            payload = instruction["payload"]
+            robot.moveDistanceSpeed(
+                payload["leftWheelDistance"],
+                payload["leftWheelSpeed"],
+                payload["rightWheelDistance"],
+                payload["rightWheelSpeed"],
+            )
+            robot.waitUntilGoal()
+        elif instruction["method_name"] == "disconnect":
+            break
 
-while True:
-    try:
-        instruction = client.getFromQueue()
-    except Empty:
-        sleep(0.01)
-        continue
-    if instruction["method_name"] == "setMovement":
-        payload = instruction["payload"]
-        robot.moveDistanceSpeed(
-            payload["leftWheelDistance"],
-            payload["leftWheelSpeed"],
-            payload["rightWheelDistance"],
-            payload["rightWheelSpeed"],
-        )
-        robot.waitUntilGoal()
-    elif instruction["method_name"] == "disconnect":
-        break
+    finished = True
+    threadSendTelemetry.join()
+    camera.deinit()
+    robot.deinit()
+    client.deinit()
+    del camera
+    del robot
+    del client
 
-finished = True
-threadSendTelemetry.join()
-camera.deinit()
-robot.deinit()
-client.deinit()
-del camera
-del robot
-del client
+if __name__ == "__main__":
+    main()

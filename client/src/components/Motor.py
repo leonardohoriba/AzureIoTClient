@@ -34,25 +34,6 @@ class Motor:
         self.__setPower(0)
         del self.encoder
 
-    def setGoal(self, theta, omega):
-        # Omega in absolute value
-        self._goalTheta = theta
-        self._goalOmega = omega
-        # Must set _moving to True here, because otherwise it would be set only in the next iteration of __speed
-        self._moving = True
-
-    def stop(self):
-        self._goalTheta = self._currentGoalTheta
-
-    def getCurrentTheta(self):
-        return self.encoder.getCurrentTheta()
-
-    def getCurrentOmega(self):
-        return self.encoder.getCurrentOmega()
-
-    def getMoving(self):
-        return self._moving
-
     def __setPower(self, power):
         # power ranging from -100 to 100
         if power == 0:
@@ -116,3 +97,22 @@ class Motor:
             )
             self.__setPower(power)
             sleep(0.025)
+
+    def setGoal(self, theta, omega):
+        # Omega in absolute value
+        self._goalTheta = theta
+        self._goalOmega = omega
+        # Must set _moving to True here, because otherwise it would be set only in the next iteration of __speed
+        self._moving = True
+
+    def stop(self):
+        self._goalTheta = self._currentGoalTheta
+
+    def getCurrentTheta(self):
+        return self.encoder.getCurrentTheta()
+
+    def getCurrentOmega(self):
+        return self.encoder.getCurrentOmega()
+
+    def getMoving(self):
+        return self._moving
