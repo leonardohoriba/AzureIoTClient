@@ -5,7 +5,7 @@ from azure.iot.hub.models import CloudToDeviceMethod
 from decouple import config
 
 
-class Controller:
+class Commander:
     def __init__(self) -> None:
         # Create IoTHubRegistryManager
         self.registry_manager = IoTHubRegistryManager(

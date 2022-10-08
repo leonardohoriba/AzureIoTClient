@@ -1,8 +1,8 @@
-from src.helpers.controller import Controller
+from helpers.commander import Commander
 from utils.direct_method_constants import DeviceID, MethodName
 
 # Example
-controller = Controller()
+controller = Commander()
 controller.iothub_devicemethod(
     device_id=DeviceID.STINGRAY_29,
     method_name=MethodName.SET_MOVEMENT,
