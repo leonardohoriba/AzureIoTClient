@@ -4,8 +4,10 @@ from azure.iot.hub import IoTHubRegistryManager
 from azure.iot.hub.models import CloudToDeviceMethod
 from decouple import config
 
+from src.helpers.eventhub_telemetry import EventHubTelemetry
 
-class Commander:
+
+class Commander(EventHubTelemetry):
     def __init__(self) -> None:
         # Create IoTHubRegistryManager
         self.registry_manager = IoTHubRegistryManager(
