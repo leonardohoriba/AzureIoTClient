@@ -9,6 +9,7 @@ from src.helpers.eventhub_telemetry import EventHubTelemetry
 
 class Commander(EventHubTelemetry):
     def __init__(self) -> None:
+        super().__init__()
         # Create IoTHubRegistryManager
         self.registry_manager = IoTHubRegistryManager(
             config("AZURE_IOT_HUB_CONNECTION_STRING")
