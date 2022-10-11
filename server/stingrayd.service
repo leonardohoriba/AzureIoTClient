@@ -1,0 +1,20 @@
+[Unit]
+Description=Stingray Azure daemon
+After=Network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+Restart=on-failure
+User=root
+RestartSec=10
+WorkingDirectory=/opt/stingrayd/
+Environment=VIRTUAL_ENV=/opt/stingrayd/venv
+Environment=PATH=$VIRTUAL_ENV/bin:$PATH
+ExecStart=/opt/stingrayd/venv/bin/python -u stingrayd.py
+StandardError=journal
+StandardOutput=journal
+StandardInput=null
+
+[Install]
+WantedBy=multi-user.target
