@@ -1,9 +1,14 @@
-from src.helpers.controller import Controller
-from utils.direct_method_constants import DeviceID, MethodName
+import time
+
+from src.helpers.commander import Commander
+from src.utils.direct_method_constants import DeviceID, MethodName
+
 
 # Example
-controller = Controller()
-controller.iothub_devicemethod(
+commander = Commander()
+
+## Send direct method
+commander.iothub_devicemethod(
     device_id=DeviceID.STINGRAY_29,
     method_name=MethodName.SET_MOVEMENT,
     payload={
@@ -13,3 +18,14 @@ controller.iothub_devicemethod(
         "rightWheelDistance": 40,
     },
 )
+
+## Start listening telemetry from Azure Event Hub
+commander.start()
+
+## Get last telemetry from telemetry queue
+while(True):
+    time.sleep(5)
+    telemetry = commander.getTelemetry()
+
+## Stop listening telemetry from Azure Event Hub
+commander.stop()
