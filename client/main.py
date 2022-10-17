@@ -58,9 +58,11 @@ def main():
         try:
             instruction = client.getFromQueue()
         except Empty:
-            sleep(0.01)
+            sleep(0.001)
             continue
-        if instruction["method_name"] == "setMovement":
+        if instruction["method_name"] == "disconnect":
+            break
+        elif instruction["method_name"] == "setMovement":
             payload = instruction["payload"]
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],
@@ -69,8 +71,18 @@ def main():
                 payload["rightWheelSpeed"],
             )
             robot.waitUntilGoal()
-        elif instruction["method_name"] == "disconnect":
-            break
+        elif instruction["method_name"] == "stopForTime":
+            payload = instruction["payload"]
+            sleep(payload["time"])
+        elif instruction["methodName"] == "moveUntilObjectFound":
+            payload = instruction["payload"]
+            robot.moveDistanceSpeed(
+                payload["leftWheelDistance"],
+                payload["leftWheelSpeed"],
+                payload["rightWheelDistance"],
+                payload["rightWheelSpeed"],
+            )
+            #TODO Wait until object found goes here
 
     finished = True
     threadSendTelemetry.join()
