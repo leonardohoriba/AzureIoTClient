@@ -82,7 +82,7 @@ def main():
                 payload["rightWheelDistance"],
                 payload["rightWheelSpeed"],
             )
-            # Wait until object found goes here
+            #TODO Wait until object found goes here
 
     finished = True
     threadSendTelemetry.join()
