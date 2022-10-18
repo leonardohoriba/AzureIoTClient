@@ -32,7 +32,7 @@ class Camera:
     def __camera(self):
         while not self._finished:
             ## OpenCV code goes here, for now
-            self._frame = self.camera.capture_array()
+            self._frame = self.processFrame(self.camera.capture_array())
             # cv.imshow("frame", self._frame)
             if cv.waitKey(1) == ord("q"):
                 break
@@ -54,3 +54,7 @@ class Camera:
             target=self.__streaming, name="streaming"
         )
         self.threadStreaming.start()
+
+    def processFrame(self, frame):
+        # Virtual method, returns the same frame if not implemented in child class
+        return frame

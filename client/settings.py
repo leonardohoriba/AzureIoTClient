@@ -60,5 +60,5 @@ FFMPEG_COMMAND = [
     "25",
     "-f",
     "flv",
-    "rtmp://x.rtmp.youtube.com/live2/ect7-wqu9-tpce-qp22-d81u",
+    config("STREAMING_LINK"),
 ]

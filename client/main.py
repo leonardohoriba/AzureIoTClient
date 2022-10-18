@@ -5,16 +5,17 @@ from time import sleep
 import pigpio
 from decouple import config
 
-from src.components.Camera import Camera
+from src.components.NeuralNetwork.NeuralNetwork import NeuralNetwork
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
 robot = Stingray(raspi)
-camera = Camera()
+sleep(1.5)  # Wait for the wheel to settle
+neuralnetwork = NeuralNetwork()
 sleep(0.5)  # Must wait for the first frame to be captured before starting stream
-camera.startStreaming()
+neuralnetwork.startStreaming()
 client = SocketClient()
 finished = False
 
@@ -41,7 +42,7 @@ def sendTelemetry():
 def main():
     global raspi
     global robot
-    global camera
+    global neuralnetwork
     global client
     global finished
     robot.triggerSonar()
@@ -82,14 +83,14 @@ def main():
                 payload["rightWheelDistance"],
                 payload["rightWheelSpeed"],
             )
-            #TODO Wait until object found goes here
+            # TODO Wait until object found goes here
 
     finished = True
     threadSendTelemetry.join()
-    camera.deinit()
+    neuralnetwork.deinit()
     robot.deinit()
     client.deinit()
-    del camera
+    del neuralnetwork
     del robot
     del client
 
