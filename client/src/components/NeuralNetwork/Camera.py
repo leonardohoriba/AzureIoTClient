@@ -3,6 +3,7 @@ import subprocess
 import threading
 
 import cv2 as cv
+import numpy as np
 import prctl
 from decouple import config
 from picamera2 import Picamera2
@@ -17,6 +18,9 @@ class Camera:
 
     def __init__(self):
         self._finished = False
+        self._frame = np.zeros(
+            (self._RESOLUTION_HEIGHT, self._RESOLUTION_WIDTH, 3), np.uint8
+        )
         self.camera = Picamera2()
         cameraConfig = self.camera.create_preview_configuration(
             main={

@@ -14,7 +14,6 @@ raspi = pigpio.pi()
 robot = Stingray(raspi)
 sleep(1.5)  # Wait for the wheel to settle
 neuralnetwork = NeuralNetwork()
-sleep(0.5)  # Must wait for the first frame to be captured before starting stream
 neuralnetwork.startStreaming()
 client = SocketClient()
 finished = False
