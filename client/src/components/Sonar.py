@@ -1,18 +1,20 @@
 import pigpio
 
+import settings
+
 
 class Sonar:
     """
     Class for the HC-SR04 ultrassonic sensor (sonar)
-    TRIG_PULSE_LEN: Measured in microseconds
-    SOUND_SPEED: Measured in meters per second
-    MAX_ECHO_PULSE_WIDTH: Measure in microseconds
+    _TRIG_PULSE_LEN: Measured in microseconds
+    _SOUND_SPEED: Measured in meters per second
+    _MAX_ECHO_PULSE_WIDTH: Measure in microseconds
     echo pulse width with no obstacle is 38ms by datasheet, 134.2ms measured on stingray 29
     """
 
-    TRIG_PULSE_LEN = 20
-    SOUND_SPEED = 340.0
-    MAX_ECHO_PULSE_WIDTH = 30000
+    _TRIG_PULSE_LEN = 20
+    _SOUND_SPEED = 340.0
+    _MAX_ECHO_PULSE_WIDTH = settings.SONAR_MAX_ECHO_PULSE_WIDTH
 
     def __init__(self, raspi, trigPin, echoPin, motorPin):
         self._raspi = raspi
@@ -39,14 +41,14 @@ class Sonar:
             self._deltaTime = tick - self._startTime
 
     def trigger(self):
-        self._raspi.gpio_trigger(self._trigPin, self.TRIG_PULSE_LEN, pigpio.ON)
+        self._raspi.gpio_trigger(self._trigPin, self._TRIG_PULSE_LEN, pigpio.ON)
 
     def getDistance(self):
         # Distance in millimeters
-        if self._deltaTime > self.MAX_ECHO_PULSE_WIDTH:
+        if self._deltaTime > self._MAX_ECHO_PULSE_WIDTH:
             return -1
         else:
-            return self._deltaTime * self.SOUND_SPEED / (1000 * 2)
+            return self._deltaTime * self._SOUND_SPEED / (1000 * 2)
 
     def setAngle(self, angle):
         if angle >= -100 and angle <= 100:

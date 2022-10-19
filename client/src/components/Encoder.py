@@ -12,10 +12,10 @@ class Encoder:
     DUTY_CYCLE_MAX: Measured in percent
     """
 
-    PWM_FREQ = 910
-    DUTY_CYCLE_MIN = 2.9
-    DUTY_CYCLE_MAX = 97.1
-    SPEED_PERIOD = 0.1
+    _PWM_FREQ = 910
+    _DUTY_CYCLE_MIN = 2.9
+    _DUTY_CYCLE_MAX = 97.1
+    _SPEED_PERIOD = 0.1
 
     def __init__(self, raspi, encoderInputPin) -> None:
         self._raspi = raspi
@@ -26,8 +26,8 @@ class Encoder:
         self._angle = 0
         self._startTime = time.time()
         self._lastTheta = 0
-        self._angleFIFO = queue.Queue(maxsize=int(self.PWM_FREQ * self.SPEED_PERIOD))
-        for i in range(int(self.PWM_FREQ * self.SPEED_PERIOD)):
+        self._angleFIFO = queue.Queue(maxsize=int(self._PWM_FREQ * self._SPEED_PERIOD))
+        for i in range(int(self._PWM_FREQ * self._SPEED_PERIOD)):
             self._angleFIFO.put(0)
         # Setup encoderInputPin and Callback function
         self._raspi.set_mode(encoderInputPin, pigpio.INPUT)
@@ -42,26 +42,26 @@ class Encoder:
             self._angleFIFO.put(self._currentTheta)
             self._currentOmega = (
                 self._currentTheta - self._lastTheta
-            ) / self.SPEED_PERIOD  # Period in seconds
+            ) / self._SPEED_PERIOD  # Period in seconds
         else:
             # Falling edge
             self.lastPulseWidth = self._pulseWidth
             self._pulseWidth = tick - self._startTime
             self.lastAngle = (
                 (
-                    100 * (self.lastPulseWidth * self.PWM_FREQ / 1000000)
-                    - self.DUTY_CYCLE_MIN
+                    100 * (self.lastPulseWidth * self._PWM_FREQ / 1000000)
+                    - self._DUTY_CYCLE_MIN
                 )
                 * 360
-                / (self.DUTY_CYCLE_MAX - self.DUTY_CYCLE_MIN)
+                / (self._DUTY_CYCLE_MAX - self._DUTY_CYCLE_MIN)
             )
             self._angle = (
                 (
-                    100 * (self._pulseWidth * self.PWM_FREQ / 1000000)
-                    - self.DUTY_CYCLE_MIN
+                    100 * (self._pulseWidth * self._PWM_FREQ / 1000000)
+                    - self._DUTY_CYCLE_MIN
                 )
                 * 360
-                / (self.DUTY_CYCLE_MAX - self.DUTY_CYCLE_MIN)
+                / (self._DUTY_CYCLE_MAX - self._DUTY_CYCLE_MIN)
             )
             if self._angle - self.lastAngle < -180:
                 # One complete turn going forward
