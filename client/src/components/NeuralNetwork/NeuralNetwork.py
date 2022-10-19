@@ -53,9 +53,7 @@ class NeuralNetwork(Camera):
                 ymin = int(max(1, (box[i][0] * self._RESOLUTION_HEIGHT)))
                 xmin = int(max(1, (box[i][1] * self._RESOLUTION_WIDTH)))
                 ymax = int(
-                    min(
-                        self._RESOLUTION_HEIGHT, (box[i][2] * self._RESOLUTION_HEIGHT)
-                    )
+                    min(self._RESOLUTION_HEIGHT, (box[i][2] * self._RESOLUTION_HEIGHT))
                 )
                 xmax = int(
                     min(self._RESOLUTION_WIDTH, (box[i][3] * self._RESOLUTION_WIDTH))
