@@ -87,13 +87,16 @@ def main():
 
     finished = True
     threadSendTelemetry.join()
+
+
+if __name__ == "__main__":
+    main()
     neuralnetwork.deinit()
     robot.deinit()
     client.deinit()
     del neuralnetwork
     del robot
     del client
-
-
-if __name__ == "__main__":
-    main()
+    print(
+        "---------------------------------------finished---------------------------------------"
+    )
