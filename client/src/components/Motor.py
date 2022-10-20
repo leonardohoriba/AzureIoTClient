@@ -5,51 +5,50 @@ from src.components.Encoder import Encoder
 
 
 class Motor:
-
     _NUM_INTEGRAL_TERMS = 20
-    _error = [0] * _NUM_INTEGRAL_TERMS
-    _goalTheta = 0
-    _goalOmega = 0
-    _currentGoalTheta = 0
-    _finished = False
-    _moving = True
 
     def __init__(self, raspi, encoderInputPin, motorOutputPin):
-        self.raspi = raspi
-        self.encoder = Encoder(raspi, encoderInputPin)
-        self.motorOutputPin = motorOutputPin
-        self.threadControl = threading.Thread(
+        self._error = [0] * self._NUM_INTEGRAL_TERMS
+        self._goalTheta = 0
+        self._goalOmega = 0
+        self._currentGoalTheta = 0
+        self._finished = False
+        self._moving = True
+        self._raspi = raspi
+        self._encoder = Encoder(raspi, encoderInputPin)
+        self._motorOutputPin = motorOutputPin
+        self._threadControl = threading.Thread(
             target=self.__control, name="control " + str(motorOutputPin)
         )
-        self.threadSpeed = threading.Thread(
+        self._threadSpeed = threading.Thread(
             target=self.__speed, name="speed " + str(motorOutputPin)
         )
-        self.threadControl.start()
-        self.threadSpeed.start()
+        self._threadControl.start()
+        self._threadSpeed.start()
 
     def deinit(self):
         self._finished = True
-        self.threadControl.join()
-        self.threadSpeed.join()
+        self._threadControl.join()
+        self._threadSpeed.join()
         self.__setPower(0)
-        del self.encoder
+        del self._encoder
 
     def __setPower(self, power):
         # power ranging from -100 to 100
         if power == 0:
-            self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1500)
+            self._raspi.set_servo_pulsewidth(self._motorOutputPin, 1500)
         elif power > 0 and power <= 100:
-            self.raspi.set_servo_pulsewidth(
-                self.motorOutputPin, 1520 + power * 200 / 100
+            self._raspi.set_servo_pulsewidth(
+                self._motorOutputPin, 1520 + power * 200 / 100
             )
         elif power > 100:
-            self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1720)
+            self._raspi.set_servo_pulsewidth(self._motorOutputPin, 1720)
         elif power < 0 and power >= -100:
-            self.raspi.set_servo_pulsewidth(
-                self.motorOutputPin, 1480 + power * 200 / 100
+            self._raspi.set_servo_pulsewidth(
+                self._motorOutputPin, 1480 + power * 200 / 100
             )
         elif power < -100:
-            self.raspi.set_servo_pulsewidth(self.motorOutputPin, 1280)
+            self._raspi.set_servo_pulsewidth(self._motorOutputPin, 1280)
 
     def __speed(self):
         while not self._finished:
@@ -107,12 +106,13 @@ class Motor:
 
     def stop(self):
         self._goalTheta = self._currentGoalTheta
+        return self._goalTheta
 
     def getCurrentTheta(self):
-        return self.encoder.getCurrentTheta()
+        return self._encoder.getCurrentTheta()
 
     def getCurrentOmega(self):
-        return self.encoder.getCurrentOmega()
+        return self._encoder.getCurrentOmega()
 
     def getMoving(self):
         return self._moving
