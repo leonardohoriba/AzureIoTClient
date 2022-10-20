@@ -3,8 +3,8 @@ from time import sleep
 
 import pigpio
 
-from src.components.NeuralNetwork.NeuralNetwork import NeuralNetwork
 from src.components.Motor import Motor
+from src.components.NeuralNetwork.NeuralNetwork import NeuralNetwork
 from src.components.Sonar import Sonar
 
 
@@ -58,7 +58,9 @@ class Stingray:
         return self.neuralnetwork.getObjectList()
 
     def waitUntilObject(self, object: str):
-        while (object not in [obj["name"] for obj in self.objectsOnCamera()]) and (self.leftMotor.getMoving() or self.rightMotor.getMoving()):
+        while (object not in [obj["name"] for obj in self.objectsOnCamera()]) and (
+            self.leftMotor.getMoving() or self.rightMotor.getMoving()
+        ):
             sleep(0.01)
 
     def stop(self):
