@@ -3,6 +3,7 @@ from time import sleep
 
 import pigpio
 
+from src.components.NeuralNetwork.NeuralNetwork import NeuralNetwork
 from src.components.Motor import Motor
 from src.components.Sonar import Sonar
 
@@ -10,11 +11,13 @@ from src.components.Sonar import Sonar
 class Stingray:
     WHEEL_RADIUS = 56.5 / 2  # Measured in mm
 
-    def __init__(self, raspi):
+    def __init__(self, raspi: pigpio.pi):
         self._raspi = raspi
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
         self.sonar = Sonar(raspi, 4, 18, 25)
+        self.neuralnetwork = NeuralNetwork()
+        self.neuralnetwork.startStreaming()
         self.leftPosition = 0
         self.rightPosition = 0
 
@@ -22,9 +25,11 @@ class Stingray:
         self.leftMotor.deinit()
         self.rightMotor.deinit()
         self.sonar.deinit()
+        self.neuralnetwork.deinit()
         del self.leftMotor
         del self.rightMotor
         del self.sonar
+        del self.neuralnetwork
         self._raspi.stop()
 
     def moveDistanceSpeed(self, leftDistance, leftSpeed, rightDistance, rightSpeed):
@@ -49,15 +54,16 @@ class Stingray:
             rightSpeed * 360 / (2 * pi * self.WHEEL_RADIUS),
         )
 
-    def moveForward(self):
-        pass
+    def objectsOnCamera(self):
+        return self.neuralnetwork.getObjectList()
 
-    def moveRight(self):
-        pass
+    def waitUntilObject(self, object: str):
+        while (object not in [obj["name"] for obj in self.objectsOnCamera()]) and (self.leftMotor.getMoving() or self.rightMotor.getMoving()):
+            sleep(0.01)
 
     def stop(self):
-        self.leftMotor.stop()
-        self.rightMotor.stop()
+        self.leftPosition = self.leftMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
+        self.rightPosition = self.rightMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
 
     def waitUntilGoal(self):
         while self.leftMotor.getMoving() or self.rightMotor.getMoving():

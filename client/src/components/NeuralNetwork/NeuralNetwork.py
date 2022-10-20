@@ -46,6 +46,7 @@ class NeuralNetwork(Camera):
         classes = self.__model_interpreter.get_tensor(self.__output[1]["index"])[0]
         # Confidence of detected objects
         conf_value = self.__model_interpreter.get_tensor(self.__output[2]["index"])[0]
+        self.__object_list = []
         for i in range(len(conf_value)):  # Comparing with the minimum threshold
             if (conf_value[i] > self.__MINIMUM_CONFIDENCE) and (conf_value[i] <= 1.0):
                 # Get bounding box coordinates and draw box
@@ -62,6 +63,10 @@ class NeuralNetwork(Camera):
                 # Draw label around the box
                 object_name = self.__labels[int(classes[i])]
                 label = "%s: %d%%" % (object_name, int(conf_value[i] * 100))
+                self.__object_list.append({
+                    "name": object_name,
+                    "confidence": conf_value[i]
+                })
                 # Get font size
                 labelSize, baseLine = cv.getTextSize(
                     label, cv.FONT_HERSHEY_SIMPLEX, 0.7, 2
@@ -84,3 +89,6 @@ class NeuralNetwork(Camera):
                     2,
                 )
         return frame_copy
+
+    def getObjectList(self):
+        return self.__object_list
