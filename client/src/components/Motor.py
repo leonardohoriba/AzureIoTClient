@@ -106,6 +106,7 @@ class Motor:
 
     def stop(self):
         self._goalTheta = self._currentGoalTheta
+        return self._goalTheta
 
     def getCurrentTheta(self):
         return self._encoder.getCurrentTheta()
