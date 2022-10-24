@@ -40,12 +40,12 @@ Connection was established.
 - Clone repo:
 `cd ~`
 `git clone <repo_name>`
-`cd <repo_name>/server`
+`cd <repo_name>/stingrayd`
 `python3 -m venv venv`
 `source venv/bin/activate`
 `pip install -r requirements.txt`
 
-- Create a .env file with the credentials in server and controller folders. Write the Azure credentials.
+- Create a .env file with the credentials in stingrayd and controller folders. Write the Azure credentials.
 ```
 #-- Azure IoT Hub
 CONNECTION_STRING=<AZURE DEVICE PRIMARY CONNECTION STRING>
@@ -53,10 +53,10 @@ CONNECTION_STRING=<AZURE DEVICE PRIMARY CONNECTION STRING>
 
 #### Install stingrayd
 - Install stingrayd as a system service:
-`sudo cp /<repo_name>/server stingrayd.service /usr/lib/systemd/system/`
+`sudo cp /<repo_name>/stingrayd stingrayd.service /usr/lib/systemd/system/`
 - Create a symbolic link to git repository folder:
 `cd /opt`
-`sudo ln -s /home/pi/<repo_name>/server/ stingrayd`
+`sudo ln -s /home/pi/<repo_name>/stingrayd/ stingrayd`
 - Check if the symbolic link was successfully:
 `ls -lha`
 - Enable the service (start automatically when the system starts):
@@ -68,9 +68,9 @@ CONNECTION_STRING=<AZURE DEVICE PRIMARY CONNECTION STRING>
 Stingrayd is running and connected to Azure Cloud.
 
 #### Stingray robot configuration
-- Install packages. Do not use virtualenv to client packages because pypi do not have the camera libraries.
+- Install packages. Do not use virtualenv for robot code packages because pypi do not have the camera libraries.
 `sudo apt install python3-pigpio pigpio python3-decouple`
 - Enable and start pigpiod
 `sudo systemctl enable pigpiod`
 `sudo systemctl start pigpiod`
-- Open VScode window in client folder.
+- Open VScode window in stingray folder.
