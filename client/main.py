@@ -5,6 +5,7 @@ from time import sleep
 import pigpio
 from decouple import config
 
+import settings
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
 
@@ -24,9 +25,13 @@ def sendTelemetry():
             robot.triggerSonar()
         client.send(
             {
-                "leftWheelSpeed": robot.getLeftWheelSpeed(),
-                "rightWheelSpeed": robot.getRightWheelSpeed(),
-                "sonarDistance": robot.getSonarDistance(),
+                "dataType": "telemetry",
+                "deviceName": settings.ROBOT_NAME,
+                "body": {
+                    "leftWheelSpeed": robot.getLeftWheelSpeed(),
+                    "rightWheelSpeed": robot.getRightWheelSpeed(),
+                    "sonarDistance": robot.getSonarDistance(),
+                },
             }
         )
         if DEBUG_PID:

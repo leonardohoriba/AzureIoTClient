@@ -72,7 +72,7 @@ class Motor:
     def __control(self):
         while not self._finished:
             kp = -1
-            ki = 0
+            ki = -0.01
             kd = 0
             for i in range(self._NUM_INTEGRAL_TERMS - 1):
                 self._error[i] = self._error[i + 1]
