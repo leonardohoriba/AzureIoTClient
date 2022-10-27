@@ -31,6 +31,7 @@ def sendTelemetry():
                     "leftWheelSpeed": robot.getLeftWheelSpeed(),
                     "rightWheelSpeed": robot.getRightWheelSpeed(),
                     "sonarDistance": robot.getSonarDistance(),
+                    "detectedObjectList": robot.objectsOnCamera(),
                 },
             }
         )
