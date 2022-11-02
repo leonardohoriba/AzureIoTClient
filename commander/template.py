@@ -3,7 +3,6 @@ import time
 from src.helpers.commander import Commander
 from src.utils.direct_method_constants import DeviceID, MethodName
 
-
 # Example
 commander = Commander()
 
@@ -23,7 +22,7 @@ commander = Commander()
 commander.start()
 
 ## Get last telemetry from telemetry queue
-while(True):
+while True:
     time.sleep(5)
     telemetry = commander.getTelemetry()
 
