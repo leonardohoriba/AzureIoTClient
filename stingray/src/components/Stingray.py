@@ -20,6 +20,7 @@ class Stingray:
         self.neuralnetwork.startStreaming()
         self.leftPosition = 0
         self.rightPosition = 0
+        self._instructionID = 0
 
     def deinit(self):
         self.leftMotor.deinit()
@@ -89,6 +90,12 @@ class Stingray:
 
     def getRightWheelSpeed(self):
         return self.rightMotor.getCurrentOmega() * 2 * pi * self.WHEEL_RADIUS / 360
+
+    def setInstructionID(self, id: int):
+        self._instructionID = id
+
+    def getInstructionID(self) -> int:
+        return self._instructionID
 
     def triggerSonar(self):
         self.sonar.trigger()
