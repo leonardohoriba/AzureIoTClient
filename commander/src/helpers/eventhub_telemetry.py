@@ -28,14 +28,14 @@ class EventHubTelemetry:
             print(delta)
             if delta < datetime.timedelta(seconds=5):
                 data = {
-                    "device_id": event.system_properties[
+                    "deviceID": event.system_properties[
                         "iothub-connection-device-id".encode()
                     ].decode(),
                     "delta": delta,
                     "body": event.body_as_json(),
                 }
                 self.telemetry.put(data)
-                print(data["body"])
+                # print(data["body"])
                 # partition_context.update_checkpoint(event)
 
     def __listen(self):
@@ -63,8 +63,4 @@ class EventHubTelemetry:
 
     def getTelemetry(self):
         """Return the last telemetry stored in the telemetry received queue. If the queue is empty, return None."""
-        try:
-            telemetry = self.telemetry.get(block=False)
-            return telemetry
-        except queue.Empty:
-            return None
+        return self.telemetry.get(block=False)
