@@ -63,4 +63,8 @@ class EventHubTelemetry:
 
     def getTelemetry(self):
         """Return the last telemetry stored in the telemetry received queue. If the queue is empty, return None."""
-        return self.telemetry.get(block=False)
+        try:
+            telemetry = self.telemetry.get(block=False)
+            return telemetry
+        except queue.Empty:
+            return None

@@ -29,12 +29,13 @@ class Intelligence:
 
     def __getTelemetry(self):
         while not self._finished:
-            try:
-                telemetry = self._commander.getTelemetry()
+            telemetry = self._commander.getTelemetry()
+            if telemetry is not None:
                 deviceNumber = DeviceID.getNumberFromDeviceId(telemetry["deviceID"])
                 if deviceNumber in self._deviceNumberList:
                     self.device[deviceNumber].telemetryStarted = True
                     self.device[deviceNumber].telemetryCallback(telemetry["body"])
-            except Empty:
+            else:
                 sleep(0.001)
-                continue
+
+
