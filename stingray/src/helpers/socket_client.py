@@ -68,7 +68,11 @@ class SocketClient:
                 pass
 
     def getFromQueue(self):
-        return self.direct_method.get(block=False)
+        try:
+            directMethod = self.direct_method.get(block=False)
+            return directMethod
+        except queue.Empty:
+            return None
 
     def __listen_stingrayd(self, conn, addr):
         """Receive a direct method from stingrayd."""

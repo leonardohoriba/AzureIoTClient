@@ -79,9 +79,8 @@ def main():
     threadSendTelemetry.start()
 
     while True:
-        try:
-            instruction = client.getFromQueue()
-        except Empty:
+        instruction = client.getFromQueue()
+        if instruction is None:
             robot.setInstructionID(0)
             sleep(0.001)
             continue
