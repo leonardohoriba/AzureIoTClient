@@ -1,8 +1,9 @@
 import threading
+from queue import Empty
 from time import sleep
 
-from src.helpers.commander import Commander
 from src.components.StingrayCommander import StingrayCommander
+from src.helpers.commander import Commander
 
 
 class Intelligence:
@@ -29,8 +30,11 @@ class Intelligence:
 
     def __getTelemetry(self):
         while not self._finished:
-            telemetry = self._commander.getTelemetry()
-            sleep(5)
+            try:
+                telemetry = self._commander.getTelemetry()
+            except Empty:
+                sleep(0.001)
+                continue
 
     def __intelligence(self):
         while not self._finished:

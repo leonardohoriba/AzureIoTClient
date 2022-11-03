@@ -19,20 +19,23 @@ class EventHubTelemetry:
         )
         self.partition_ids = self.eventhub_client.get_partition_ids()
         self.telemetry = queue.Queue()
-        self.start_time = datetime.datetime.now(datetime.timezone.utc)
 
     def __on_event(self, partition_context, event):
         if event:
             # Condition for not send old message stored in Azure Event Hub
-            if event.enqueued_time > self.start_time:
+            now = datetime.datetime.now(datetime.timezone.utc)
+            delta = now - event.enqueued_time
+            print(delta)
+            if delta < datetime.timedelta(seconds=5):
                 data = {
                     "device_id": event.system_properties[
                         "iothub-connection-device-id".encode()
                     ].decode(),
+                    "delta": delta,
                     "body": event.body_as_json(),
                 }
                 self.telemetry.put(data)
-                print(data)
+                print(data["body"])
                 # partition_context.update_checkpoint(event)
 
     def __listen(self):
@@ -41,7 +44,9 @@ class EventHubTelemetry:
             self.eventhub_client.receive(
                 on_event=self.__on_event,
                 max_wait_time=1,  # time in seconds
-                starting_position="-1",  # "-1" is from the beginning of the partition.
+                starting_position=datetime.datetime.now(
+                    datetime.timezone.utc
+                ),  # "-1" is from the beginning of the partition.
                 # partition_id=self.partition_ids[-1], # receive events from specified partition
             )
 
