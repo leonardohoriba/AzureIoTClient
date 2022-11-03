@@ -57,7 +57,12 @@ class SocketClient:
             try:
                 self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client.connect(self.ADDR)
-                self.__listen_stingrayd(self.client, self.ADDR)
+                self.threadDirectMethod = threading.Thread(
+                    target=self.__listen_stingrayd,
+                    args=(self.client, self.ADDR),
+                    name="directMethod",
+                )
+                self.threadDirectMethod.start()
                 print(f"[NEW CONNECTION] {self.ADDR}")
             except:
                 pass
