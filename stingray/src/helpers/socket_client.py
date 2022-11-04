@@ -16,7 +16,8 @@ class SocketClient:
 
     _finished = False
 
-    def __init__(self, flushCallback) -> None:
+    def __init__(self, flushMethodName: str, flushCallback: function) -> None:
+        self._flushMethodName = flushMethodName
         self._flushCallback = flushCallback
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.direct_method = queue.Queue()
@@ -87,7 +88,7 @@ class SocketClient:
                     msg = json.loads(message)
                     print(f"Direct method received:\n{msg}")
                     # Check if the instruction is to flush
-                    if msg["method_name"] == "flush":
+                    if msg["method_name"] == self._flushMethodName:
                         # Flush the queue and call cancel callback function
                         self.direct_method.queue.clear()
                         self._flushCallback()
