@@ -16,7 +16,7 @@ class SocketClient:
 
     _finished = False
 
-    def __init__(self, flushMethodName: str, flushCallback: function) -> None:
+    def __init__(self, flushMethodName: str, flushCallback) -> None:
         self._flushMethodName = flushMethodName
         self._flushCallback = flushCallback
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
