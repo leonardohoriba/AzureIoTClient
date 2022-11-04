@@ -1,5 +1,6 @@
 from math import pi
 from time import sleep
+from time import time
 
 import pigpio
 
@@ -13,6 +14,7 @@ class Stingray:
 
     def __init__(self, raspi: pigpio.pi):
         self._raspi = raspi
+        self._flushed = False
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
         self.sonar = Sonar(raspi, 4, 18, 25)
@@ -32,6 +34,16 @@ class Stingray:
         del self.sonar
         del self.neuralnetwork
         self._raspi.stop()
+
+    def flushCallback(self):
+        self._flushed = True
+        self.stop()
+
+    def stopForTime(self, stopTime):
+        startTime = int(time())
+        while (time() - startTime < stopTime) and not self._flushed:
+            sleep(0.001)
+        self._flushed = False
 
     def moveDistanceSpeed(self, leftDistance, leftSpeed, rightDistance, rightSpeed):
         self.movePositionSpeed(
@@ -65,7 +77,8 @@ class Stingray:
             sleep(0.01)
 
     def stop(self):
-        self.leftPosition = self.leftMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
+        # One of the motors must have a negative angle, because they are mirrored
+        self.leftPosition = -self.leftMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
         self.rightPosition = self.rightMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
 
     def waitUntilGoal(self):

@@ -14,7 +14,7 @@ DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
 robot = Stingray(raspi)
 sleep(1.5)  # Wait for the wheel to settle
-client = SocketClient()
+client = SocketClient(robot.flushCallback)
 finished = False
 
 
@@ -98,7 +98,7 @@ def main():
             )
             robot.waitUntilGoal()
         elif methodName == "stopForTime":
-            sleep(payload["time"])
+            robot.stopForTime(payload["time"])
         elif methodName == "moveUntilObjectFound":
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],

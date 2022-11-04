@@ -16,7 +16,8 @@ class SocketClient:
 
     _finished = False
 
-    def __init__(self) -> None:
+    def __init__(self, flushCallback) -> None:
+        self._flushCallback = flushCallback
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.direct_method = queue.Queue()
         try:
@@ -85,8 +86,14 @@ class SocketClient:
                     message = conn.recv(msg_length).decode(self.FORMAT)
                     msg = json.loads(message)
                     print(f"Direct method received:\n{msg}")
-                    # Put message in direct method queue
-                    self.direct_method.put(msg)
+                    # Check if the instruction is to flush
+                    if msg["method_name"] == "flush":
+                        # Flush the queue and call cancel callback function
+                        self.direct_method.queue.clear()
+                        self._flushCallback()
+                    else:
+                        # Put message in direct method queue
+                        self.direct_method.put(msg)
                 elif msg_length == "":
                     print("Stingrayd disconnected.")
                     break
