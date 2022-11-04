@@ -19,13 +19,14 @@ class StingrayCommander:
     def telemetryCallback(self, telemetryBody):
         if telemetryBody["dataType"] == "telemetry":
             self._state = telemetryBody["body"]
+            print(self._state)
 
     def turn(self, angle: float, angularSpeed: float, radius: float):
         self._commander.iothub_devicemethod(
             device_id=self._deviceID,
             method_name=MethodName.SET_MOVEMENT,
             payload={
-                "instructionID": 1,
+                "instructionID": 2,
                 "rightWheelSpeed": abs(
                     angularSpeed * (2 * pi / 360) * (radius - self.ROBOT_RADIUS / 2)
                 ),
@@ -40,6 +41,25 @@ class StingrayCommander:
                 * (radius + self.ROBOT_RADIUS / 2),
             },
         )
+
+    def flush(self):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.FLUSH,
+            payload={
+                "instructionID": 1,
+            },
+        )
+
+    def stopForTime(self, time: float):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.STOP_FOR_TIME,
+            payload={
+                "instructionID": 3,
+                "time": time,
+            },
+        )   
 
     def waitUntilExecutingInstruction(self, instructionID: int):
         while self._state["instructionID"] != instructionID:

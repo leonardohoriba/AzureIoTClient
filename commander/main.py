@@ -12,7 +12,11 @@ def main() -> None:
     # Here goes the intelligence logic
     while True:
         intel.device[29].turn(90, 20, 400)
-        intel.device[29].waitUntilExecutingInstruction(1)
+        intel.device[29].stopForTime(10)
+        intel.device[29].waitUntilExecutingInstruction(3)
+        sleep(3)
+        # intel.device[29].waitUntilExecutingInstruction(1)
+        intel.device[29].flush()
         intel.device[29].waitUntilExecutingInstruction(0)
 
 
