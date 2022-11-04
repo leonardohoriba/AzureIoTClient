@@ -2,6 +2,7 @@ import inspect
 
 
 class MethodName:
+    FLUSH = "flush"
     SET_MOVEMENT = "setMovement"
     DISCONNECT = "disconnect"
     STOP_FOR_TIME = "stopForTime"

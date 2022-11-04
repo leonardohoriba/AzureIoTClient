@@ -9,12 +9,13 @@ from decouple import config
 import settings
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
+from src.helpers.direct_method_constants import MethodName
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
 robot = Stingray(raspi)
 sleep(1.5)  # Wait for the wheel to settle
-client = SocketClient()
+client = SocketClient(MethodName.FLUSH, robot.flushCallback)
 finished = False
 
 
@@ -87,9 +88,9 @@ def main():
         methodName = instruction["method_name"]
         payload = instruction["payload"]
         robot.setInstructionID(payload["instructionID"])
-        if methodName == "disconnect":
+        if methodName == MethodName.DISCONNECT:
             break
-        elif methodName == "setMovement":
+        elif methodName == MethodName.SET_MOVEMENT:
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],
                 payload["leftWheelSpeed"],
@@ -97,9 +98,9 @@ def main():
                 payload["rightWheelSpeed"],
             )
             robot.waitUntilGoal()
-        elif methodName == "stopForTime":
-            sleep(payload["time"])
-        elif methodName == "moveUntilObjectFound":
+        elif methodName == MethodName.STOP_FOR_TIME:
+            robot.stopForTime(payload["time"])
+        elif methodName == MethodName.MOVE_UNTIL_OBJECT_FOUND:
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],
                 payload["leftWheelSpeed"],
