@@ -1,7 +1,7 @@
 from decouple import config
 
 # Robot parameters
-ROBOT_NAME = "stingray29"
+ROBOT_NAME = config("ROBOT_NAME", default="stingray")
 
 # --  Socket Configuration
 
