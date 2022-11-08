@@ -1,14 +1,17 @@
 import threading
 from time import sleep
+from decouple import config
 
 from src.components.Encoder import Encoder
 
+DEBUG_PID = bool(config("DEBUG_PID", default=False))
 
 class Motor:
-    _NUM_INTEGRAL_TERMS = 20
+    _NUM_INTEGRAL_TERMS = 100
 
     def __init__(self, raspi, encoderInputPin, motorOutputPin):
         self._error = [0] * self._NUM_INTEGRAL_TERMS
+        self._currentError = 0
         self._goalTheta = 0
         self._goalOmega = 0
         self._currentGoalTheta = 0
@@ -71,31 +74,40 @@ class Motor:
 
     def __control(self):
         while not self._finished:
-            kp = -1
-            ki = -0.01
-            kd = 0
+            kp = 1.8605 *-1
+            ki = 2.9009 /-100
+            kd = 0.039529 *-100
+
+            self._lastError = self._currentError
+            self._currentError = self._currentGoalTheta - self.getCurrentTheta()
+            derror = (self._currentError - self._lastError)
+
             for i in range(self._NUM_INTEGRAL_TERMS - 1):
                 self._error[i] = self._error[i + 1]
-            self._error[self._NUM_INTEGRAL_TERMS - 1] = (
-                self._currentGoalTheta - self.getCurrentTheta()
-            )
-            derror = (
-                self._error[self._NUM_INTEGRAL_TERMS - 1]
-                - self._error[self._NUM_INTEGRAL_TERMS - 2]
-            )
+            # Anti-windup
+            if kp*self._currentError > -100 and kp*self._currentError < 100:
+                self._error[self._NUM_INTEGRAL_TERMS - 1] = self._currentError
+            else:
+                self._error[self._NUM_INTEGRAL_TERMS - 1] = 0
             # Integrate the last _NUM_INTEGRAL_TERMS, decaying the weight linearly
             ierror = 0
             for i in range(self._NUM_INTEGRAL_TERMS):
-                ierror += self._error[self._NUM_INTEGRAL_TERMS - (i + 1)] * (
-                    1 - (i / self._NUM_INTEGRAL_TERMS)
-                )
+                ierror += self._error[self._NUM_INTEGRAL_TERMS - (i + 1)] * (1 - (i / self._NUM_INTEGRAL_TERMS))
+
             power = (
-                kp * self._error[self._NUM_INTEGRAL_TERMS - 1]
+                kp * self._currentError
                 + ki * ierror
                 + kd * derror
             )
-            self.__setPower(power)
-            sleep(0.025)
+            if self._motorOutputPin == 23:
+                # print(f"error: {self._currentError}, ierror: {ierror}, derror:{derror}, power: {power}")
+                pass
+            if DEBUG_PID:
+                # self.__setPower(self._goalOmega)
+                self.__setPower(power)
+            else:
+                self.__setPower(power)
+            sleep(0.01)
 
     def setGoal(self, theta, omega):
         # Omega in absolute value
