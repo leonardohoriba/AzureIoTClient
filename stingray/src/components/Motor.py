@@ -7,8 +7,8 @@ from src.components.Encoder import Encoder
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 
-class Motor:
 
+class Motor:
     def __init__(self, raspi, encoderInputPin, motorOutputPin):
         self._error = [0] * self._NUM_INTEGRAL_TERMS
         self._goalTheta = 0
@@ -76,30 +76,26 @@ class Motor:
         currentError = 0
         while not self._finished:
             freq = 100
-            kp = 1.326 *-1
-            ki = 1.2546 /-freq
-            kd = 0.019635 *-freq
+            kp = 1.326 * -1
+            ki = 1.2546 / -freq
+            kd = 0.019635 * -freq
 
             lastTime = time()
-            while time() - lastTime < 1/freq:
+            while time() - lastTime < 1 / freq:
                 sleep(0.0001)
 
             lastError = currentError
             currentError = self._currentGoalTheta - self.getCurrentTheta()
-            derror = (currentError - lastError)
+            derror = currentError - lastError
             ierror += currentError
             if ierror < -100:
                 ierror = -100
             elif ierror > 100:
                 ierror = 100
 
-            power = (
-                kp * currentError
-                + ki * ierror
-                + kd * derror
-            )
+            power = kp * currentError + ki * ierror + kd * derror
             # if self._motorOutputPin == 23:
-                # print(f"error: {currentError}, ierror: {ierror}, derror:{derror}, power: {power}")
+            # print(f"error: {currentError}, ierror: {ierror}, derror:{derror}, power: {power}")
             if DEBUG_PID:
                 # self.__setPower(self._goalOmega)
                 self.__setPower(power)
