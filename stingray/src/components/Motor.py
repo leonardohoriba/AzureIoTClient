@@ -10,7 +10,6 @@ DEBUG_PID = bool(config("DEBUG_PID", default=False))
 
 class Motor:
     def __init__(self, raspi, encoderInputPin, motorOutputPin):
-        self._error = [0] * self._NUM_INTEGRAL_TERMS
         self._goalTheta = 0
         self._goalOmega = 0
         self._currentGoalTheta = 0

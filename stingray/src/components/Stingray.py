@@ -10,7 +10,7 @@ from src.components.Sonar import Sonar
 
 
 class Stingray:
-    WHEEL_RADIUS = 56.5 / 2  # Measured in mm
+    WHEEL_RADIUS = 54 / 2  # Measured in mm
 
     def __init__(self, raspi: pigpio.pi):
         self._raspi = raspi
