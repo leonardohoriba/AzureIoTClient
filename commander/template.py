@@ -23,7 +23,7 @@ commander = Commander()
 commander.start()
 
 ## Get last telemetry from telemetry queue
-while(True):
+while True:
     time.sleep(5)
     telemetry = commander.getTelemetry()
 
