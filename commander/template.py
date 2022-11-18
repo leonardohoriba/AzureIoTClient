@@ -3,7 +3,6 @@ import time
 from src.helpers.commander import Commander
 from src.utils.direct_method_constants import DeviceID, MethodName
 
-
 # Example
 commander = Commander()
 

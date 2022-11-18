@@ -1,38 +1,80 @@
 import threading
 from queue import Empty
 from time import sleep
+from time import time
 
 import pigpio
 from decouple import config
 
+import settings
 from src.components.Stingray import Stingray
 from src.helpers.socket_client import SocketClient
+from src.helpers.direct_method_constants import MethodName
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
 robot = Stingray(raspi)
 sleep(1.5)  # Wait for the wheel to settle
-client = SocketClient()
+client = SocketClient(MethodName.FLUSH, robot.flushCallback)
 finished = False
 
 
 def sendTelemetry():
+    client.send(
+        {
+            "dataType": "deviceEvent",
+            "deviceName": settings.ROBOT_NAME,
+            "body": {
+                "eventName": "init",
+                "timestamp": time(),
+            },
+        }
+    )
     while not finished:
         # PID calibration doesn't need sonar and needs higher sample rate
-        if not DEBUG_PID:
-            # print(f"Distance: {robot.getSonarDistance()}")
-            robot.triggerSonar()
-        client.send(
-            {
-                "leftWheelSpeed": robot.getLeftWheelSpeed(),
-                "rightWheelSpeed": robot.getRightWheelSpeed(),
-                "sonarDistance": robot.getSonarDistance(),
-            }
-        )
+        # For PID calibration we need the distance, not the speed
         if DEBUG_PID:
+            client.send(
+                {
+                    "dataType": "telemetry",
+                    "deviceName": settings.ROBOT_NAME,
+                    "body": {
+                        "instructionID": robot.getInstructionID(),
+                        "leftWheelSpeed": robot.getLeftWheelTotalDistance(),
+                        "rightWheelSpeed": robot.getRightWheelTotalDistance(),
+                        "sonarDistance": robot.getSonarDistance(),
+                        "detectedObjectList": robot.objectsOnCamera(),
+                    },
+                }
+            )
             sleep(0.01)
         else:
-            sleep(0.25)
+            client.send(
+                {
+                    "dataType": "telemetry",
+                    "deviceName": settings.ROBOT_NAME,
+                    "body": {
+                        "instructionID": robot.getInstructionID(),
+                        "leftWheelSpeed": robot.getLeftWheelSpeed(),
+                        "rightWheelSpeed": robot.getRightWheelSpeed(),
+                        "sonarDistance": robot.getSonarDistance(),
+                        "detectedObjectList": robot.objectsOnCamera(),
+                    },
+                }
+            )
+            robot.triggerSonar()
+            sleep(1)
+
+    client.send(
+        {
+            "dataType": "deviceEvent",
+            "deviceName": settings.ROBOT_NAME,
+            "body": {
+                "eventName": "deinit",
+                "timestamp": time(),
+            },
+        }
+    )
 
 
 def main():
@@ -51,15 +93,17 @@ def main():
     threadSendTelemetry.start()
 
     while True:
-        try:
-            instruction = client.getFromQueue()
-        except Empty:
+        instruction = client.getFromQueue()
+        if instruction is None:
+            robot.setInstructionID(0)
             sleep(0.001)
             continue
-        if instruction["method_name"] == "disconnect":
+        methodName = instruction["method_name"]
+        payload = instruction["payload"]
+        robot.setInstructionID(payload["instructionID"])
+        if methodName == MethodName.DISCONNECT:
             break
-        elif instruction["method_name"] == "setMovement":
-            payload = instruction["payload"]
+        elif methodName == MethodName.SET_MOVEMENT:
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],
                 payload["leftWheelSpeed"],
@@ -67,11 +111,9 @@ def main():
                 payload["rightWheelSpeed"],
             )
             robot.waitUntilGoal()
-        elif instruction["method_name"] == "stopForTime":
-            payload = instruction["payload"]
-            sleep(payload["time"])
-        elif instruction["method_name"] == "moveUntilObjectFound":
-            payload = instruction["payload"]
+        elif methodName == MethodName.STOP_FOR_TIME:
+            robot.stopForTime(payload["time"])
+        elif methodName == MethodName.MOVE_UNTIL_OBJECT_FOUND:
             robot.moveDistanceSpeed(
                 payload["leftWheelDistance"],
                 payload["leftWheelSpeed"],

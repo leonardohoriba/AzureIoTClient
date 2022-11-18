@@ -1,5 +1,8 @@
 from decouple import config
 
+# Robot parameters
+ROBOT_NAME = config("ROBOT_NAME", default="stingray")
+
 # --  Socket Configuration
 
 # Server port

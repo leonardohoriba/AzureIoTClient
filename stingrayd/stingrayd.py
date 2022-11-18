@@ -57,7 +57,11 @@ class StingrayDaemon:
                     print(f"Sending data:\n{msg}")
                     # Send message to Azure
                     # TODO Check this function if internet shuts down
-                    await self.device_client.send_message(json.dumps(msg))
+                    try:
+                        await self.device_client.send_message(json.dumps(msg))
+                    except:
+                        conn.close()
+                        os._exit(1)
                 elif msg_length == "":
                     print("Client disconnected.")
                     break

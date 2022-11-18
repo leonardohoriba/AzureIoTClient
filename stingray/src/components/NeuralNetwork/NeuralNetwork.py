@@ -64,7 +64,7 @@ class NeuralNetwork(Camera):
                 object_name = self.__labels[int(classes[i])]
                 label = "%s: %d%%" % (object_name, int(conf_value[i] * 100))
                 self.__object_list.append(
-                    {"name": object_name, "confidence": conf_value[i]}
+                    {"name": object_name, "confidence": conf_value[i].item()}
                 )
                 # Get font size
                 labelSize, baseLine = cv.getTextSize(
