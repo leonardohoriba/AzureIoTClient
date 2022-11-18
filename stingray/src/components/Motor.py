@@ -24,6 +24,8 @@ class Motor:
         self._threadSpeed = threading.Thread(
             target=self.__speed, name="speed " + str(motorOutputPin)
         )
+
+    def init(self):
         self._threadControl.start()
         self._threadSpeed.start()
 
@@ -33,6 +35,9 @@ class Motor:
         self._threadSpeed.join()
         self.__setPower(0)
         del self._encoder
+
+    def setOtherMotor(self, otherMotor):
+        self._otherMotor = otherMotor
 
     def __setPower(self, power):
         # power ranging from -100 to 100
@@ -84,6 +89,7 @@ class Motor:
                 sleep(0.0001)
 
             lastError = currentError
+            # currentError = 0.1*self._currentGoalTheta - 0.9*self._otherMotor.getCurrentTheta() - self.getCurrentTheta()
             currentError = self._currentGoalTheta - self.getCurrentTheta()
             derror = currentError - lastError
             ierror += currentError

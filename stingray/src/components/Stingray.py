@@ -17,6 +17,10 @@ class Stingray:
         self._flushed = False
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
+        self.leftMotor.setOtherMotor(self.rightMotor)
+        self.rightMotor.setOtherMotor(self.leftMotor)
+        self.leftMotor.init()
+        self.rightMotor.init()
         self.sonar = Sonar(raspi, 4, 18, 25)
         self.neuralnetwork = NeuralNetwork()
         self.neuralnetwork.startStreaming()
