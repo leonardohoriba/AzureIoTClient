@@ -4,12 +4,13 @@ from time import sleep
 
 from src.components.StingrayCommander import StingrayCommander
 from src.helpers.commander import Commander
-from src.utils.direct_method_constants import DeviceID
 from src.helpers.graphing import Graphing
+from src.utils.direct_method_constants import DeviceID
 
 
 class Intelligence:
     _MAX_NUMBER_OF_ROBOTS = 64
+
     def __init__(self, deviceNumberList: list[int], graph: Graphing):
         self._graph = graph
         self._finished = False
@@ -41,27 +42,44 @@ class Intelligence:
                 self.device[deviceNumber].telemetryStarted = True
                 self.device[deviceNumber].telemetryCallback(telemetry["body"])
             if deviceNumber == 2:
-                self._graph.plotValue(value=[self.device[2].getState()["leftWheelSpeed"], self.device[1].getState()["leftWheelSpeed"]])
+                self._graph.plotValue(
+                    value=[
+                        self.device[2].getState()["leftWheelSpeed"],
+                        self.device[1].getState()["leftWheelSpeed"],
+                    ]
+                )
 
     def moveSync(self, robots: list[int], distance: float, speed: float):
         # Get start position and command a movement for half the distance required
-        startPosition = self._MAX_NUMBER_OF_ROBOTS*[float(0)]
+        startPosition = self._MAX_NUMBER_OF_ROBOTS * [float(0)]
         lessThanOneQuarter = True
         for robotNumber in robots:
-            startPosition[robotNumber] = self.device[robotNumber].getState()["leftWheelPosition"]
-            self.device[robotNumber].move(distance=distance/2, speed=speed)
+            startPosition[robotNumber] = self.device[robotNumber].getState()[
+                "leftWheelPosition"
+            ]
+            self.device[robotNumber].move(distance=distance / 2, speed=speed)
         # Calculate delta speed for each robot
-        deltaSpeed = self._MAX_NUMBER_OF_ROBOTS*[float(0)]
+        deltaSpeed = self._MAX_NUMBER_OF_ROBOTS * [float(0)]
         robotThatReachedOneQuarter = 0
         while lessThanOneQuarter:
             for robotNumber in robots:
-                if self.device[robotNumber].getState()["leftWheelPosition"] > distance/2:
+                if (
+                    self.device[robotNumber].getState()["leftWheelPosition"]
+                    > distance / 2
+                ):
                     lessThanOneQuarter = False
                     robotThatReachedOneQuarter = robotNumber
         for robotNumber in robots:
             if robotNumber != robotThatReachedOneQuarter:
-                deltaDistance = self.device[robotNumber].getState()["leftWheelPosition"] - self.device[robotThatReachedOneQuarter].getState()["leftWheelPosition"]
-                deltaSpeed[robotNumber] = deltaDistance*2*speed/distance
+                deltaDistance = (
+                    self.device[robotNumber].getState()["leftWheelPosition"]
+                    - self.device[robotThatReachedOneQuarter].getState()[
+                        "leftWheelPosition"
+                    ]
+                )
+                deltaSpeed[robotNumber] = deltaDistance * 2 * speed / distance
         # Command the rest of the movement with the delta speed added
         for robotNumber in robots:
-            self.device[robotNumber].move(distance=distance/2, speed=(speed + deltaSpeed[robotNumber])) 
+            self.device[robotNumber].move(
+                distance=distance / 2, speed=(speed + deltaSpeed[robotNumber])
+            )

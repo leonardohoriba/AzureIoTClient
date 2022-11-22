@@ -1,6 +1,5 @@
 from math import pi
-from time import sleep
-from time import time
+from time import sleep, time
 
 from src.helpers.commander import Commander
 from src.utils.direct_method_constants import DeviceID, MethodName
@@ -23,7 +22,9 @@ class StingrayCommander:
     def telemetryCallback(self, telemetryBody):
         if telemetryBody["dataType"] == "telemetry":
             currentTime = time()
-            self._state = {"timeDelta": currentTime - self._lastTime} | telemetryBody["body"]
+            self._state = {"timeDelta": currentTime - self._lastTime} | telemetryBody[
+                "body"
+            ]
             self._lastTime = currentTime
             print(self._state)
 
@@ -81,7 +82,7 @@ class StingrayCommander:
                 "instructionID": 3,
                 "time": time,
             },
-        )   
+        )
 
     def waitUntilExecutingInstruction(self, instructionID: int):
         while self._state["instructionID"] != instructionID:
