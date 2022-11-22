@@ -2,8 +2,6 @@ import json
 import socket
 import threading
 
-from decouple import config
-
 import settings
 
 
@@ -17,36 +15,41 @@ class SocketServer:
     FORMAT = settings.FORMAT
 
     def __init__(self) -> None:
+        # Server configuration
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
+        # Start listening clients
+        self._start_thread = threading.Thread(target=self.__start, name="start_thread")
+        self._start_thread.start()
+        self.client_list = []
 
-    def __handle_client(self, conn, addr):
-        while True:
-            try:
-                msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
-                if msg_length:
-                    msg_length = int(msg_length)
-                    # Receive message from Client
-                    msg = json.loads(conn.recv(msg_length).decode(self.FORMAT))
-                    print(f"Received:\n{msg}")
-                elif msg_length == "":
-                    print("Client disconnected.")
-                    break
-            except:
-                break
-        conn.close()
-        print(f"[DISCONNECTED] {addr}.")
-
-    def start(self):
+    def __start(self):
         print("[STARTING] server is starting...")
         self.server.listen()
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         while True:
             conn, addr = self.server.accept()
-            threading.Thread(
-                target=self.__handle_client,
-                args=(conn, addr),
-                daemon=True,
-                name=f"thread_{conn}",
-            ).start()
+            self.client_list.append((conn, addr))
             print(f"[NEW CONNECTION] {addr} connected.")
+
+    def send_all(self, msg: dict) -> None:
+        """Function to send a json message to Sockets"""
+        message = json.dumps(msg).encode(self.FORMAT)
+        msg_length = len(message)
+        send_length = str(msg_length).encode(self.FORMAT)
+        send_length += b" " * (self.HEADER - len(send_length))
+        for cl in self.client_list:
+            try:
+                cl[0].send(send_length)
+                cl[0].send(message)
+            except ConnectionResetError:
+                self.client_list.remove(cl)
+                print(f"[CONNECTION CLOSED] {cl[1]}")
+            except:
+                try:
+                    self._start_thread = threading.Thread(
+                        target=self.__start, name="start_thread"
+                    )
+                    self._start_thread.start()
+                except:
+                    pass
