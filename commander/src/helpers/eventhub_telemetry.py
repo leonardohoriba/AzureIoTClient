@@ -26,7 +26,7 @@ class EventHubTelemetry:
             now = datetime.datetime.now(datetime.timezone.utc)
             delta = now - event.enqueued_time
             print(delta)
-            if delta < datetime.timedelta(seconds=5):
+            if delta < datetime.timedelta(seconds=1):
                 data = {
                     "deviceID": event.system_properties[
                         "iothub-connection-device-id".encode()

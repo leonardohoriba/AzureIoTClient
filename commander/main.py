@@ -1,38 +1,38 @@
 from time import sleep
+import threading
 
 from src.components.intelligence import Intelligence
+from src.helpers.graphing import Graphing
 
-intel = Intelligence(deviceNumberList=[29, 30])
+graph = Graphing(numPlots=2, numPoints=20)
+intel = Intelligence(deviceNumberList=[2, 1], graph=graph)
 
+finished = False
 
-def main() -> None:
-    while not intel.device[29].telemetryStarted:
+def commander() -> None:
+    while not intel.device[2].telemetryStarted:
         sleep(0.001)
         continue
-    while not intel.device[30].telemetryStarted:
+    while not intel.device[1].telemetryStarted:
         sleep(0.001)
         continue
     # Here goes the intelligence logic
-    while True:
-        intel.device[29].move(distance=1000, speed=200)
-        intel.device[30].move(distance=1000, speed=200)
-        intel.device[29].stopForTime(time=2)
-        intel.device[30].stopForTime(time=2)
-        intel.device[29].turn(angle=180, angularSpeed=45, radius=0)
-        intel.device[30].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.device[29].stopForTime(time=2)
-        intel.device[30].stopForTime(time=2)
-        intel.device[29].move(distance=1000, speed=200)
-        intel.device[30].move(distance=1000, speed=200)
-        intel.device[29].stopForTime(time=2)
-        intel.device[30].stopForTime(time=2)
-        intel.device[29].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.device[30].turn(angle=180, angularSpeed=45, radius=0)
-        intel.device[29].waitUntilExecutingInstruction(0)
-        intel.device[30].waitUntilExecutingInstruction(0)         
+    while not finished:
+        intel.moveSync([1, 2], distance=2000, speed=200)
+        intel.device[2].turn(angle=180, angularSpeed=45, radius=0)
+        intel.device[1].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.moveSync([1, 2], distance=2000, speed=200)
+        intel.device[2].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.device[1].turn(angle=180, angularSpeed=45, radius=0)  
+        intel.device[2].waitUntilExecutingInstruction(0)
+        intel.device[1].waitUntilExecutingInstruction(0)
         sleep(10)
 
 if __name__ == "__main__":
-    main()
+    threadCommander = threading.Thread(target=commander, name="threadCommander")
+    threadCommander.start()
+    graph.plotGraph()
+    finished = True
+    threadCommander.join()
     intel.deinit()
     del intel
