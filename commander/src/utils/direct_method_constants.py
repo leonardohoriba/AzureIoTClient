@@ -10,6 +10,8 @@ class MethodName:
 
 
 class DeviceID:
+    STINGRAY_1 = "Stingray01"
+    STINGRAY_2 = "Stingray02"
     STINGRAY_29 = "Stingray29"
     STINGRAY_30 = "Stingray30"
 
