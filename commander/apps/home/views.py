@@ -24,6 +24,8 @@ def pages(request):
 
         if load_template == "admin":
             return HttpResponseRedirect(reverse("admin:index"))
+        elif load_template == "chat":
+            return HttpResponseRedirect(reverse("chat:index"))
         context["segment"] = load_template
 
         html_template = loader.get_template("home/" + load_template)

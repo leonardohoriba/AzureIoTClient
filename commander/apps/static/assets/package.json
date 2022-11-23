@@ -1,7 +1,7 @@
 {
-    "name": "soft-ui-dashboard",
-    "version": "1.0.1",
-    "description": "Premium Dashboard for Bootstrap 5",
+    "name": "stingray-commander",
+    "version": "1.0.0",
+    "description": "Stingray Commander",
     "main": "dashboards/default.html",
     "directories": {
         "example": "root"
@@ -13,25 +13,14 @@
         "watch": "gulp-watch"
     },
     "keywords": [
-        "soft ui dashboard pro",
         "bootstrap 5",
         "dashboard",
-        "admin dashboard",
-        "creative tim",
-        "html dashboard",
-        "html css dashboard",
-        "web dashboard",
-        "premium",
-        "premium bootstrap admin dashboard",
-        "css3 kit",
-        "bootstrap dashboard",
-        "frontend",
-        "responsive bootstrap admin dashboard"
+        "stingray"
     ],
-    "author": "Creative Tim <hello@creative-tim.com> (https://www.creative-tim.com/)",
-    "license": "Premium",
+    "author": "Leonardo Horiba <leonardohoriba@gmail.com> (https://github.com/leonardohoriba/AzureIoTPlatform)",
+    "license": "Free",
     "bugs": {
-        "url": "https://github.com/creativetimofficial/ct-soft-ui-dashboard-pro/issues"
+        "url": "https://github.com/leonardohoriba/AzureIoTPlatform"
     },
     "devDependencies": {
         "gulp": "^4.0.2",
@@ -53,5 +42,5 @@
         "gulp-wait": "0.0.2",
         "merge-stream": "2.0.0"
     },
-    "homepage": "https://creative-tim.com/product/soft-ui-dashboard-pro"
+    "homepage": "https://github.com/leonardohoriba/AzureIoTPlatform"
 }
