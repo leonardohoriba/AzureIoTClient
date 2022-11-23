@@ -19,10 +19,10 @@ def commander() -> None:
         continue
     # Here goes the intelligence logic
     while not finished:
-        intel.moveSync([1, 2], distance=2000, speed=200)
+        intel.moveSync([1, 2], distance=2000, speed=150)
         intel.device[2].turn(angle=180, angularSpeed=45, radius=0)
         intel.device[1].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.moveSync([1, 2], distance=2000, speed=200)
+        intel.moveSync([1, 2], distance=2000, speed=150)
         intel.device[2].turn(angle=-180, angularSpeed=45, radius=0)
         intel.device[1].turn(angle=180, angularSpeed=45, radius=0)
         intel.device[2].waitUntilExecutingInstruction(0)

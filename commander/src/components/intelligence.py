@@ -50,6 +50,8 @@ class Intelligence:
                 )
 
     def moveSync(self, robots: list[int], distance: float, speed: float):
+        for robotNumber in robots:
+            self.device[robotNumber].waitUntilExecutingInstruction(0)
         # Get start position and command a movement for half the distance required
         startPosition = self._MAX_NUMBER_OF_ROBOTS * [float(0)]
         lessThanOneQuarter = True
@@ -63,20 +65,14 @@ class Intelligence:
         robotThatReachedOneQuarter = 0
         while lessThanOneQuarter:
             for robotNumber in robots:
-                if (
-                    self.device[robotNumber].getState()["leftWheelPosition"]
-                    > distance / 2
-                ):
+                if (self.device[robotNumber].getState()["leftWheelPosition"] - startPosition[robotNumber] > distance / 4):
                     lessThanOneQuarter = False
                     robotThatReachedOneQuarter = robotNumber
+                    print(f"Robot {robotNumber} reached one quarter")
         for robotNumber in robots:
             if robotNumber != robotThatReachedOneQuarter:
-                deltaDistance = (
-                    self.device[robotNumber].getState()["leftWheelPosition"]
-                    - self.device[robotThatReachedOneQuarter].getState()[
-                        "leftWheelPosition"
-                    ]
-                )
+                deltaDistance = ((self.device[robotThatReachedOneQuarter].getState()["leftWheelPosition"] - startPosition[robotThatReachedOneQuarter]) - (self.device[robotNumber].getState()["leftWheelPosition"] - startPosition[robotNumber]))
+                print(f"Delta distance {robotNumber} = {deltaDistance}")
                 deltaSpeed[robotNumber] = deltaDistance * 2 * speed / distance
         # Command the rest of the movement with the delta speed added
         for robotNumber in robots:

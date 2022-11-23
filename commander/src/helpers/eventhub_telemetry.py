@@ -25,7 +25,7 @@ class EventHubTelemetry:
             # Condition for not send old message stored in Azure Event Hub
             now = datetime.datetime.now(datetime.timezone.utc)
             delta = now - event.enqueued_time
-            print(delta)
+            # print(delta)
             if delta < datetime.timedelta(seconds=1):
                 data = {
                     "deviceID": event.system_properties[
