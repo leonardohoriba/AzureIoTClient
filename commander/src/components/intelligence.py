@@ -65,13 +65,25 @@ class Intelligence:
         robotThatReachedOneQuarter = 0
         while lessThanOneQuarter:
             for robotNumber in robots:
-                if (self.device[robotNumber].getState()["leftWheelPosition"] - startPosition[robotNumber] > distance / 4):
+                if (
+                    self.device[robotNumber].getState()["leftWheelPosition"]
+                    - startPosition[robotNumber]
+                    > distance / 4
+                ):
                     lessThanOneQuarter = False
                     robotThatReachedOneQuarter = robotNumber
                     print(f"Robot {robotNumber} reached one quarter")
         for robotNumber in robots:
             if robotNumber != robotThatReachedOneQuarter:
-                deltaDistance = ((self.device[robotThatReachedOneQuarter].getState()["leftWheelPosition"] - startPosition[robotThatReachedOneQuarter]) - (self.device[robotNumber].getState()["leftWheelPosition"] - startPosition[robotNumber]))
+                deltaDistance = (
+                    self.device[robotThatReachedOneQuarter].getState()[
+                        "leftWheelPosition"
+                    ]
+                    - startPosition[robotThatReachedOneQuarter]
+                ) - (
+                    self.device[robotNumber].getState()["leftWheelPosition"]
+                    - startPosition[robotNumber]
+                )
                 print(f"Delta distance {robotNumber} = {deltaDistance}")
                 deltaSpeed[robotNumber] = deltaDistance * 2 * speed / distance
         # Command the rest of the movement with the delta speed added
