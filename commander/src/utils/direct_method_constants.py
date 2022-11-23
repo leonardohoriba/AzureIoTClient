@@ -28,3 +28,9 @@ class DeviceID:
         ]:
             if attribute[1] == deviceID:
                 return int(attribute[0].split("_")[-1])
+
+    def getDevices() -> list:
+        attributes = inspect.getmembers(DeviceID, lambda a: not (inspect.isroutine(a)))
+        return [
+            a[-1] for a in attributes if not (a[0].startswith("__") and a[0].endswith("__"))
+        ]
