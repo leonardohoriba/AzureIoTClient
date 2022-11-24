@@ -1,26 +1,44 @@
+import threading
 from time import sleep
 
 from src.components.intelligence import Intelligence
+from src.helpers.graphing import Graphing
 
-intel = Intelligence(deviceNumberList=[29])
+robotList = [1, 2, 29, 30]
+
+graph = Graphing(numPlots=2, numPoints=20)
+intel = Intelligence(deviceNumberList=robotList, graph=graph)
+
+finished = False
 
 
-def main() -> None:
-    while not intel.device[29].telemetryStarted:
-        sleep(0.001)
-        continue
+def commander() -> None:
+    for robot in robotList:
+        while not intel.device[robot].telemetryStarted:
+            sleep(0.001)
+            continue
     # Here goes the intelligence logic
-    while True:
-        intel.device[29].turn(90, 20, 400)
-        intel.device[29].stopForTime(10)
-        intel.device[29].waitUntilExecutingInstruction(3)
-        sleep(3)
-        # intel.device[29].waitUntilExecutingInstruction(1)
-        intel.device[29].flush()
-        intel.device[29].waitUntilExecutingInstruction(0)
+    while not finished:
+        intel.moveSync(robotList, distance=2000, speed=150)
+        intel.device[1].turn(angle=180, angularSpeed=45, radius=0)
+        intel.device[2].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.device[29].turn(angle=180, angularSpeed=45, radius=0)
+        intel.device[30].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.moveSync(robotList, distance=2000, speed=150)
+        intel.device[1].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.device[2].turn(angle=180, angularSpeed=45, radius=0)
+        intel.device[29].turn(angle=-180, angularSpeed=45, radius=0)
+        intel.device[30].turn(angle=180, angularSpeed=45, radius=0)
+        for robot in robotList:
+            intel.device[robot].waitUntilExecutingInstruction(0)
+        sleep(10)
 
 
 if __name__ == "__main__":
-    main()
+    threadCommander = threading.Thread(target=commander, name="threadCommander")
+    threadCommander.start()
+    graph.plotGraph()
+    finished = True
+    threadCommander.join()
     intel.deinit()
     del intel

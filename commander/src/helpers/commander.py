@@ -17,6 +17,10 @@ class Commander(EventHubTelemetry):
 
     def iothub_devicemethod(self, device_id, method_name, payload):
         try:
+            # self.socket.send_all({
+            #     "methodName": method_name,
+            #     "payload": payload,
+            # })
             encodedPayload = json.dumps(payload).encode("utf-8")
             # Create the direct method.
             deviceMethod = CloudToDeviceMethod(

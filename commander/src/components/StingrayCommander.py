@@ -1,12 +1,12 @@
 from math import pi
-from time import sleep
+from time import sleep, time
 
 from src.helpers.commander import Commander
 from src.utils.direct_method_constants import DeviceID, MethodName
 
 
 class StingrayCommander:
-    ROBOT_RADIUS = 204  # millimeters
+    ROBOT_RADIUS = 205  # millimeters
 
     def __init__(self, commander: Commander, robotNumber: int):
         self._commander = commander
@@ -14,12 +14,22 @@ class StingrayCommander:
         self.telemetryStarted = False
         self._state = {
             "instructionID": -1,
+            "leftWheelSpeed": 0,
+            "rightWheelSpeed": 0,
         }
+        self._lastTime = time()
 
     def telemetryCallback(self, telemetryBody):
         if telemetryBody["dataType"] == "telemetry":
-            self._state = telemetryBody["body"]
+            currentTime = time()
+            self._state = {"timeDelta": currentTime - self._lastTime} | telemetryBody[
+                "body"
+            ]
+            self._lastTime = currentTime
             print(self._state)
+
+    def getState(self):
+        return self._state
 
     def turn(self, angle: float, angularSpeed: float, radius: float):
         self._commander.iothub_devicemethod(
@@ -42,6 +52,19 @@ class StingrayCommander:
             },
         )
 
+    def move(self, distance: float, speed: float):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.SET_MOVEMENT,
+            payload={
+                "instructionID": 4,
+                "rightWheelSpeed": abs(speed),
+                "rightWheelDistance": distance,
+                "leftWheelSpeed": abs(speed),
+                "leftWheelDistance": distance,
+            },
+        )
+
     def flush(self):
         self._commander.iothub_devicemethod(
             device_id=self._deviceID,
@@ -59,7 +82,7 @@ class StingrayCommander:
                 "instructionID": 3,
                 "time": time,
             },
-        )   
+        )
 
     def waitUntilExecutingInstruction(self, instructionID: int):
         while self._state["instructionID"] != instructionID:

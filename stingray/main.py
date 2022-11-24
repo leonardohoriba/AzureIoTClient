@@ -33,35 +33,24 @@ def sendTelemetry():
     while not finished:
         # PID calibration doesn't need sonar and needs higher sample rate
         # For PID calibration we need the distance, not the speed
+        client.send(
+            {
+                "dataType": "telemetry",
+                "deviceName": settings.ROBOT_NAME,
+                "body": {
+                    "instructionID": robot.getInstructionID(),
+                    "leftWheelSpeed": robot.getLeftWheelSpeed(),
+                    "rightWheelSpeed": robot.getRightWheelSpeed(),
+                    "leftWheelPosition": robot.getLeftWheelTotalDistance(),
+                    "rightWheelPosition": robot.getRightWheelTotalDistance(),
+                    "sonarDistance": robot.getSonarDistance(),
+                    "detectedObjectList": robot.objectsOnCamera(),
+                },
+            }
+        )
         if DEBUG_PID:
-            client.send(
-                {
-                    "dataType": "telemetry",
-                    "deviceName": settings.ROBOT_NAME,
-                    "body": {
-                        "instructionID": robot.getInstructionID(),
-                        "leftWheelSpeed": robot.getLeftWheelTotalDistance(),
-                        "rightWheelSpeed": robot.getRightWheelTotalDistance(),
-                        "sonarDistance": robot.getSonarDistance(),
-                        "detectedObjectList": robot.objectsOnCamera(),
-                    },
-                }
-            )
             sleep(0.01)
         else:
-            client.send(
-                {
-                    "dataType": "telemetry",
-                    "deviceName": settings.ROBOT_NAME,
-                    "body": {
-                        "instructionID": robot.getInstructionID(),
-                        "leftWheelSpeed": robot.getLeftWheelSpeed(),
-                        "rightWheelSpeed": robot.getRightWheelSpeed(),
-                        "sonarDistance": robot.getSonarDistance(),
-                        "detectedObjectList": robot.objectsOnCamera(),
-                    },
-                }
-            )
             robot.triggerSonar()
             sleep(1)
 

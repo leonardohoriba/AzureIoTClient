@@ -5,6 +5,8 @@ import threading
 from azure.eventhub import EventHubConsumerClient, TransportType
 from decouple import config
 
+from src.helpers.socket_server import SocketServer
+
 
 class EventHubTelemetry:
     """
@@ -19,14 +21,15 @@ class EventHubTelemetry:
         )
         self.partition_ids = self.eventhub_client.get_partition_ids()
         self.telemetry = queue.Queue()
+        self.socket = SocketServer()
 
     def __on_event(self, partition_context, event):
         if event:
             # Condition for not send old message stored in Azure Event Hub
             now = datetime.datetime.now(datetime.timezone.utc)
             delta = now - event.enqueued_time
-            print(delta)
-            if delta < datetime.timedelta(seconds=5):
+            # print(delta)
+            if delta < datetime.timedelta(seconds=1):
                 data = {
                     "deviceID": event.system_properties[
                         "iothub-connection-device-id".encode()
@@ -35,6 +38,7 @@ class EventHubTelemetry:
                     "body": event.body_as_json(),
                 }
                 self.telemetry.put(data)
+                # self.socket.send_all(data)
                 # print(data["body"])
                 # partition_context.update_checkpoint(event)
 
