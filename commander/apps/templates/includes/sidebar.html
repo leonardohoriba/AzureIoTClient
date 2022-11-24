@@ -9,8 +9,10 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
+        
+        {% for device in devices %}
         <li class="nav-item mb-1">
-          <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="/">
+          <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="/{{ device }}">
             <div class="icon icon-shape icon-xs shadow border-radius-sm bg-gradient-light text-center me-2 d-flex align-items-center justify-content-center">
               <svg width="12px" height="20px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <title>spaceship</title>
@@ -28,9 +30,11 @@
                 </g>
               </svg>
             </div>
-            <span class="nav-link-text ms-1">StingrayX</span>
+            <span class="nav-link-text ms-1">{{ device }}</span>
           </a>
         </li>
+        {% endfor %}
+
         <li class="nav-item mt-3">
           <h6 class="ps-4 text-uppercase text-xs font-weight-bolder opacity-6">Templates</h6>
         </li>
