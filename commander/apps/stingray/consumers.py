@@ -1,5 +1,4 @@
 import json
-import time
 import threading
 from asgiref.sync import async_to_sync
 

@@ -822,12 +822,10 @@
         let data = JSON.parse(e.data)
         console.log('Data:', data)
 
-        if(data.type === 'data'){
+        if(data.deviceID === "{{ device }}"){
             let messages = document.getElementById('messages')
 
-            messages.insertAdjacentHTML('beforeend', `<div>
-                                    <p>${data.message}</p>
-                                </div>`)
+            messages.innerHTML = JSON.stringify(data.body)
         }
     }
 
