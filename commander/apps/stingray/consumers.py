@@ -7,7 +7,7 @@ from src.helpers.socket_client import SocketClient
 
 class StingrayConsumer(WebsocketConsumer):
     REFRESH_RATE = 1
-    # socket_client = SocketClient()
+    socket_client = SocketClient()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.socket_client = SocketClient()
