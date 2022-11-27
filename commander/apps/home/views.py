@@ -8,7 +8,7 @@ from src.utils.direct_method_constants import DeviceID
 
 device_list = DeviceID.getDevices()
 
-@login_required(login_url="/login/")
+# @login_required(login_url="/login/")
 def index(request):
     context = {"segment": "index"}
     context["devices"] = DeviceID.getDevices()
@@ -16,7 +16,7 @@ def index(request):
     html_template = loader.get_template("home/index.html")
     return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
+# @login_required(login_url="/login/")
 def stingray(request):
     context = {"segment": "stingray"}
     context["devices"] = DeviceID.getDevices()
@@ -24,7 +24,7 @@ def stingray(request):
     html_template = loader.get_template("home/stingray.html")
     return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
+# @login_required(login_url="/login/")
 def pages(request):
     context = {}
     # All resource paths end in .html.

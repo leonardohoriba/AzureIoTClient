@@ -9,7 +9,9 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
-        
+        <li class="nav-item mt-3">
+          <h6 class="ps-4 text-uppercase text-xs font-weight-bolder opacity-6">Devices</h6>
+        </li>
         {% for device in devices %}
         <li class="nav-item mb-1">
           <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="/{{ device }}">

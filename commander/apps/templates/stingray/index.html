@@ -8,17 +8,75 @@
 {% block content %}
 
     <div class="container-fluid py-4">
+      <div class="row mt-4">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-7">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Left Wheel Position</p>
+                    <h5 class="font-weight-bolder" id="left_wheel_position"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-7">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Right Wheel Position</p>
+                    <h5 class="font-weight-bolder" id="right_wheel_position"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-7">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Left Wheel Speed</p>
+                    <h5 class="font-weight-bolder" id="left_wheel_speed"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-7">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Right Wheel Speed</p>
+                    <h5 class="font-weight-bolder" id="right_wheel_speed"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row my-4">
         <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
           <div class="card">
             <div class="card-header pb-0">
               <div class="row">
-                <div class="col-lg-6 col-7">
-                  <h6>Detected Objects</h6>
-                </div>
-                <div class="col-lg-6 col-5 my-auto text-end">
-                  <div class="dropdown float-lg-end pe-4">
-                  </div>
+              <div class="col-lg-6 col-7">
+                <h6>Detected Objects</h6>
+              </div>
+              <div class="col-lg-6 col-5 my-auto text-end">
+                <div class="dropdown float-lg-end pe-4">
+                  <div id="sonar_distance"></div>
                 </div>
               </div>
             </div>
@@ -34,22 +92,6 @@
                   <tbody id="detected_objects">
                   </tbody>
                 </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-4">
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-7">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
-                    <h5 class="font-weight-bolder">$53,000</h5>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -743,12 +785,16 @@
         console.log('Data:', data)
 
         if(data.deviceID === "{{ device }}"){
-            //let messages = document.getElementById('messages')
-            //messages.innerHTML = JSON.stringify(data.body)
 
+            let body = data.body.body
+            // Cards
+            document.getElementById('left_wheel_position').innerHTML = body.leftWheelPosition.toFixed(2)
+            document.getElementById('right_wheel_position').innerHTML = body.rightWheelPosition.toFixed(2)
+            document.getElementById('left_wheel_speed').innerHTML = body.leftWheelSpeed.toFixed(2)
+            document.getElementById('right_wheel_speed').innerHTML = body.rightWheelSpeed.toFixed(2)
             // Detected Objects
             let detected_objects = ""
-            data.body.body.detectedObjectList.forEach(object => {
+            body.detectedObjectList.forEach(object => {
               detected_objects +=
               `<tr>
                 <td>
@@ -759,12 +805,18 @@
                   </div>
                 </td>
                 <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold">${object.confidence}</span>
+                  <span class="text-xs font-weight-bold">${object.confidence.toFixed(2)}</span>
                 </td>
               </tr>`
             })
             document.getElementById('detected_objects').innerHTML = detected_objects
             
+            // Sonar distance
+            document.getElementById('sonar_distance').innerHTML = `
+            <div class="row">
+              <h6 class="mb-0 text-sm">Sonar distance: ${body.sonarDistance.toFixed(2)}</h6>
+            </div>`
+
         }
     }
 
