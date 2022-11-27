@@ -1,3 +1,45 @@
+## Azure configuration
+
+### Create an account on Azure
+- Go to [Microsoft Azure for Students homepage](https://azure.microsoft.com/en-us/free/students/)
+- Click on `Start free`
+- Sign up using your home university email (uOttawa doesn't work)
+- Use your phone number for verification
+- Provide your personal information to create your profile
+- Log in to your new account
+
+### Create the Iot Hub resource
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `Create a resource`
+- Search for `IoT Hub` and select it
+- Click `Create`
+- Subscription: `Azure for Students`
+- Resource group: Create new and call it `Stingray`
+- IoT hub name: `Stingray`
+- Region: `Canada Central`
+- Click `Next: Networking`
+- Connectivity configuration: `Public access`
+- Click `Next: Management`
+- Pricing and scale tier: `F1: Free tier`
+- Click `Review + create`
+- Review everything and click `Create`
+
+### Create the CosmosDB resource
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `Create a resource`
+- Search for `Azure Cosmos DB` and select it
+- Click `Create`
+- Select the `NoSQL` API
+- Subscription: `Azure for Students`
+- Resource group: `Stingray`
+- Account name: Give it a unique name
+- Location: `(Canada) Canada Central`
+- Capacity mode: `Provisioned throughput`
+- Apply free tier discount: `Apply`
+- Limit total account throughput: Check
+- Click `Review + create`
+- Review everything and click `Create`
+
 ## Laptop configuration
 
 ### Required software
@@ -17,7 +59,6 @@
 - Add all IP addresses as DNS A records for `stingrayXX` hostnames
 
 ## Stingray Configuration
-
 - If you have more than one robot, repeat this section for each robot.
 
 ### Materials needed
