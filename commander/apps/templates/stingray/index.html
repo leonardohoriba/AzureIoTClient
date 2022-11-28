@@ -243,7 +243,7 @@
             new Chart(position_graph, {
               type: "line",
               data: {
-                labels: ["", "", "", "", "", "", "", "", "", ""],
+                labels: new Array(100).fill(0),
                 datasets: [{
                     label: "Left Wheel Position",
                     tension: 0.4,
@@ -341,7 +341,7 @@
             new Chart(speed_graph, {
               type: "line",
               data: {
-                labels: ["", "", "", "", "", "", "", "", "", ""],
+                labels: new Array(100).fill(0),
                 datasets: [{
                     label: "Left Wheel Speed",
                     tension: 0.4,
@@ -390,7 +390,7 @@
                       drawBorder: false,
                     },
                     ticks: {
-                      suggestedMin: 0,
+                      suggestedMin: -500,
                       suggestedMax: 500,
                       beginAtZero: true,
                       padding: 10,
@@ -432,7 +432,7 @@
             new Chart(sonar_graph, {
               type: "line",
               data: {
-                labels: ["", "", "", "", "", "", "", "", "", ""],
+                labels: new Array(100).fill(0),
                 datasets: [{
                     label: "Sonar Distance",
                     tension: 0.4,
