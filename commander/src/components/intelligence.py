@@ -24,7 +24,12 @@ class Intelligence:
         self._threadGetTelemetry = threading.Thread(
             target=self.__getTelemetry, name="getTelemetry"
         )
+        self._threadGetInterface = threading.Thread(
+            target=self.__getInterface, name="getInterface"
+        )
         self._threadGetTelemetry.start()
+        self._threadGetInterface.start()
+        self._startButtonClicked = False
 
     def deinit(self):
         self._commander.stop()
@@ -48,6 +53,26 @@ class Intelligence:
                         self.device[1].getState()["leftWheelSpeed"],
                     ]
                 )
+
+    def __getInterface(self):
+        while not self._finished:
+            interfaceButtons = self._commander.socket.receive_all()
+            if(interfaceButtons["start_button"]):
+                print("start_button")
+                self._startButtonClicked = True
+                continue
+            if(interfaceButtons["stop_button"]):
+                print("stop_button")
+                for deviceNumber in self._deviceNumberList:
+                    self.device[deviceNumber].flush()
+                raise Exception("Emergency stop")
+            else:
+                sleep(1)
+                continue
+            
+    def waitForStartButton(self):
+        while not self._startButtonClicked:
+            sleep(0.001)
 
     def moveSync(self, robots: list[int], distance: float, speed: float):
         for robotNumber in robots:
