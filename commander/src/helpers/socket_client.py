@@ -44,7 +44,7 @@ class SocketClient:
             except:
                 break
         self.client.close()
-        print(f"[DISCONNECTED] {self.client}.")
+        print(f"[DISCONNECTED]")
 
     def get_data(self):
         """Return the last data stored in the data received queue. If the queue is empty, return None."""
@@ -53,5 +53,32 @@ class SocketClient:
             return data
         except queue.Empty:
             return None
+    
+    def send(self, msg: dict) -> None:
+        """Function to send a json message to Socket Server"""
+        message = json.dumps(msg).encode(self.FORMAT)
+        msg_length = len(message)
+        send_length = str(msg_length).encode(self.FORMAT)
+        send_length += b" " * (self.HEADER - len(send_length))
+        try:
+            self.client.send(send_length)
+            self.client.send(message)
+        except ConnectionResetError:
+            print("Lost connection to socket server (Stingrayd).")
+            self.client.close()
+            print("[CONNECTION CLOSED]")
+        except:
+            try:
+                self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.client.connect(self.ADDR)
+                self.threadDirectMethod = threading.Thread(
+                    target=self.__listen_stingrayd,
+                    args=(self.client, self.ADDR),
+                    name="directMethod",
+                )
+                self.threadDirectMethod.start()
+                print(f"[NEW CONNECTION] {self.ADDR}")
+            except:
+                pass
 
     # TODO Try to reconnect if server crashes.
