@@ -45,6 +45,7 @@ class SocketServer:
                     msg_length = int(msg_length)
                     # Receive message from Stingrayd
                     message = conn.recv(msg_length).decode(self.FORMAT)
+                    message = json.loads(message)
                     if "start_button" in message:
                         self._interfaceButtons["start_button"] = message["start_button"]
                     if "stop_button" in message:
