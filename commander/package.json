@@ -1,19 +1,13 @@
 {
-    "name": "soft-ui-dashboard-django",
-    "mastertemplate": "boilerplate-code-django-dashboard",
+    "name": "stingray-commander-django",
     "version": "1.0.0",
-    "description": "Template project - django Boilerplate Code",
+    "description": "Stingray Commander",
     "repository": {
         "type": "git",
-        "url": "https://github.com/app-generator/django-soft-ui-dashboard"
+        "url": "https://github.com/app-generator/django-stingray-commander"
     },
-    "bugs": {
-        "url": "https://github.com/app-generator/django-soft-ui-dashboard/issues",
-        "email": "support@appseed.us"
-    },
-    "author": "AppSeed App Generator <support@appseed.us> (https://appseed.us)",
     "engines": {
-        "node": ">=10.0.0"
+        "node": ">=12.0.0"
     },
     "dependencies": {},
     "devDependencies": {}

@@ -34,11 +34,10 @@ class EventHubTelemetry:
                     "deviceID": event.system_properties[
                         "iothub-connection-device-id".encode()
                     ].decode(),
-                    "delta": delta,
                     "body": event.body_as_json(),
                 }
                 self.telemetry.put(data)
-                # self.socket.send_all(data)
+                self.socket.send_all(data)
                 # print(data["body"])
                 # partition_context.update_checkpoint(event)
 

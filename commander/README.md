@@ -149,8 +149,8 @@ The application can be easily executed in a docker container. The steps:
 > Get the code
 
 ```bash
-$ git clone https://github.com/creativetimofficial/soft-ui-dashboard-django.git
-$ cd soft-ui-dashboard-django
+$ git clone https://github.com/creativetimofficial/stingray-commander-django.git
+$ cd stingray-commander-django
 ```
 
 > Start the app in Docker
@@ -165,5 +165,5 @@ Visit `http://localhost:85` in your browser. The app should be up & running.
 
 ---
 Template credits
-[Soft UI Dashboard - Django Template](https://www.creative-tim.com/product/soft-ui-dashboard-django)
+[Soft UI Dashboard - Django Template](https://www.creative-tim.com/product/stingray-commander-django)
 

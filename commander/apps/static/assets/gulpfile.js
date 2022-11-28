@@ -11,7 +11,7 @@ var Paths = {
     HERE: './',
     DIST: 'dist/',
     CSS: './css/',
-    SCSS_TOOLKIT_SOURCES: './scss/soft-ui-dashboard.scss',
+    SCSS_TOOLKIT_SOURCES: './scss/stingray-commander.scss',
     SCSS: './scss/**/**'
 };
 
@@ -27,7 +27,7 @@ gulp.task('scss', function() {
 
 // Minify CSS
 gulp.task('minify:css', function() {
-    return gulp.src(Paths.CSS + '/soft-ui-dashboard.css')
+    return gulp.src(Paths.CSS + '/stingray-commander.css')
         .pipe(cleanCss())
         .pipe(rename(function(path) {
             // Updates the object in-place
