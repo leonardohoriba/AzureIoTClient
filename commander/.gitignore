@@ -210,7 +210,6 @@ package-lock.json
 staticfiles/*
 !staticfiles/.gitkeep 
 .vscode/symbols.json
-.vscode/
 
 apps/static/assets/node_modules
 apps/static/assets/yarn.lock
