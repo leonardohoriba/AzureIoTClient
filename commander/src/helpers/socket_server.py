@@ -19,11 +19,15 @@ class SocketServer:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
         # Start listening clients
-        self._start_thread = threading.Thread(target=self.__start, name="start_thread")
-        self._start_thread.start()
+        self._threadSocketServer = threading.Thread(target=self.__socketServer, name="socketServer")
+        self._threadSocketServer.start()
         self.client_list = []
+        self._interfaceButtons = {
+            "start_button": False,
+            "stop_button": False,
+        }
 
-    def __start(self):
+    def __socketServer(self):
         print("[STARTING] server is starting...")
         self.server.listen()
         print(f"[LISTENING] Server is listening on {self.SERVER}")
@@ -31,6 +35,29 @@ class SocketServer:
             conn, addr = self.server.accept()
             self.client_list.append((conn, addr))
             print(f"[NEW CONNECTION] {addr} connected.")
+            threading.Thread(target=self.__socketReceive, name="socketReceive", args=(conn, addr)).start()
+
+    def __socketReceive(self, conn, addr):
+        while True:
+            try:
+                msg_length = conn.recv(self.HEADER).decode(self.FORMAT)
+                if msg_length:
+                    msg_length = int(msg_length)
+                    # Receive message from Stingrayd
+                    message = conn.recv(msg_length).decode(self.FORMAT)
+                    message = json.loads(message)
+                    if "start_button" in message:
+                        self._interfaceButtons["start_button"] = message["start_button"]
+                    if "stop_button" in message:
+                        self._interfaceButtons["stop_button"] = message["stop_button"]
+                elif msg_length == "":
+                    print("Interface disconnected.")
+                    break
+            except ConnectionResetError:
+                print(f"[CONNECTION CLOSED] {addr}")
+                break
+            except Exception as ex:
+                print(ex)
 
     def send_all(self, msg: dict) -> None:
         """Function to send a json message to Sockets"""
@@ -53,3 +80,11 @@ class SocketServer:
                     self._start_thread.start()
                 except:
                     pass
+
+    def receive_all(self):
+        interfaceButtonsLatch = self._interfaceButtons
+        self._interfaceButtons = {
+            "start_button": False,
+            "stop_button": False,
+        }
+        return interfaceButtonsLatch
