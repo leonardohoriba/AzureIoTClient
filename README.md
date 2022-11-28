@@ -1,3 +1,91 @@
+# Stingray2 deployment and setup
+
+## Azure configuration
+
+### Create an account on Azure
+- Go to [Microsoft Azure for Students homepage](https://azure.microsoft.com/en-us/free/students/)
+- Click on `Start free`
+- Sign up using your home university email (uOttawa doesn't work)
+- Use your phone number for verification
+- Provide your personal information to create your profile
+- Log in to your new account
+
+### Create the Iot Hub resource
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `Create a resource`
+- Search for `IoT Hub` and select it
+- Click `Create`
+- Subscription: `Azure for Students`
+- Resource group: Create new and call it `Stingray`
+- IoT hub name: `Stingray`
+- Region: `Canada Central`
+- Click `Next: Networking`
+- Connectivity configuration: `Public access`
+- Click `Next: Management`
+- Pricing and scale tier: `F1: Free tier`
+- Click `Review + create`
+- Review everything and click `Create`
+
+### Create the Cosmos DB resource
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `Create a resource`
+- Search for `Azure Cosmos DB` and select it
+- Click `Create`
+- Select the `NoSQL` API
+- Subscription: `Azure for Students`
+- Resource group: `Stingray`
+- Account name: Give it a unique name
+- Location: `(Canada) Canada Central`
+- Capacity mode: `Provisioned throughput`
+- Apply free tier discount: `Apply`
+- Limit total account throughput: Check
+- Click `Review + create`
+- Review everything and click `Create`
+
+#### Create the database
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `All resources`
+- Select your new Cosmos DB resource
+- Click on `Data Explorer`
+- Click on the arrow next to `New Container` and select `New Database`
+- Database id: `Stingray`
+- Provision throughput: Check
+- Database throughput (autoscale): `Autoscale`
+- Database Max RU/s: `1000`
+- Click `OK`
+
+#### Create the container
+- Click `New Container`
+- Database id: Use existing: `Stingray`
+- Container id: `Stingray`
+- Indexing: `Automatic`
+- Partition key: `/id`
+- Provision dedicated throughput for this container: Uncheck
+- Click `OK`
+
+### Create the route from IoT Hub to Cosmos DB
+- Go to [Azure portal home](https://portal.azure.com/#home)
+- Click on `All resources`
+- Select your IoT Hub resource
+- Click on `Message routing`
+- Click `Add`
+- Ckick on `Add endpoint` and select `Cosmos DB`
+- Endpoint name: `Database`
+- Cosmos DB account: Your Cosmos DB resource name
+- Database: `Stingray`
+- Collection: `Stingray`
+- Generate a synthetic partition key for messages: `Enable`
+- Partition key name: `id`
+- Partition key template: `{deviceid}-{YYYY}-{MM}`
+- Authentication type: `Key-based`
+- Click `Create`
+- Back to the `Add a route` screen, Name: `Database`
+- Endpoint: `Database`
+- Data source: `Device Telemetry Messages`
+- Enable route: `Enable`
+- Routing query: `true`
+- Click `Save`
+
 ## Laptop configuration
 
 ### Required software
@@ -5,11 +93,30 @@
 - [Visual Studio Code (VS Code)](https://code.visualstudio.com/download)
 - [Python](https://www.python.org/downloads/)
 - [Node.js 12](https://nodejs.org/en/download/)
+- [Git bash](https://git-scm.com/download/win)
 
 ### Required VS Code extensions
 - `Python`
 - `Remote - SSH`
 - `Remote Development`
+
+### Commander installation
+- Open your home folder: `C:\Users\<username>`
+- Right click on an empty space and `Git bash here`
+- Clone the repository:  
+`git clone https://github.com/ncctlab/ncct-stingray2`  
+- Go to the commander folder:  
+`cd ncct-stingray2/commander/`  
+- Create Python virtual environment:  
+`python -m venv venv`
+- Activate Python virtual environment:  
+`source vent/Scripts/activate`
+- Install requirements:  
+`pip install -r requirements.txt`
+- Open VS Code:  
+`code .`
+- Trust the folder authors
+- Now you have the VS Code workspace configured for Commander development
 
 ## Network Configuration
 - Ask the professor
@@ -17,7 +124,6 @@
 - Add all IP addresses as DNS A records for `stingrayXX` hostnames
 
 ## Stingray Configuration
-
 - If you have more than one robot, repeat this section for each robot.
 
 ### Materials needed
