@@ -10,11 +10,17 @@ device_list = DeviceID.getDevices()
 
 # @login_required(login_url="/login/")
 def index(request):
-    context = {"segment": "index"}
+    context = {"segment": device_list[0]}
     context["devices"] = DeviceID.getDevices()
 
-    html_template = loader.get_template("home/index.html")
+    html_template = loader.get_template("stingray/index.html")
     return HttpResponse(html_template.render(context, request))
+# def index(request):
+#     context = {"segment": "index"}
+#     context["devices"] = DeviceID.getDevices()
+
+#     html_template = loader.get_template("home/index.html")
+#     return HttpResponse(html_template.render(context, request))
 
 # @login_required(login_url="/login/")
 def stingray(request):

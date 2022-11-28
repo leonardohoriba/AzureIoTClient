@@ -8,7 +8,7 @@ device_list = DeviceID.getDevices()
 urlpatterns = [
     # The home page
     path("", views.index, name="home"),
-    path("chat/", include("apps.chat.urls"), name="chat"),
+    # path("chat/", include("apps.chat.urls"), name="chat"),
     # Matches any html file
     # re_path(r'^.*\.*', views.pages, name='pages'),
 ] + [path(f"{device}/", include("apps.stingray.urls"), name=device) for device in device_list]
