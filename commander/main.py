@@ -4,7 +4,7 @@ from time import sleep
 from src.components.intelligence import Intelligence
 from src.helpers.graphing import Graphing
 
-robotList = [1, 2, 29, 30]
+robotList = [29]
 
 graph = Graphing(numPlots=2, numPoints=20)
 intel = Intelligence(deviceNumberList=robotList, graph=graph)
@@ -17,19 +17,33 @@ def commander() -> None:
     intel.waitForStartButton()
     # Here goes the intelligence logic
     while True:
-        intel.moveSync(robotList, distance=2000, speed=150)
-        intel.device[1].turn(angle=180, angularSpeed=45, radius=0)
-        intel.device[2].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.device[29].turn(angle=180, angularSpeed=45, radius=0)
-        intel.device[30].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.moveSync(robotList, distance=2000, speed=150)
-        intel.device[1].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.device[2].turn(angle=180, angularSpeed=45, radius=0)
-        intel.device[29].turn(angle=-180, angularSpeed=45, radius=0)
-        intel.device[30].turn(angle=180, angularSpeed=45, radius=0)
+        # All robots move forward until one finds an obstacle
+        for robot in robotList:
+            intel.device[robot].moveUntilObstacleFound(distance=5000, speed=150, obstacleDistance=300)
+        for robot in robotList:
+            intel.device[robot].waitUntilExecutingInstruction(5)
+        robotThatFoundObstacle = -1
+        while robotThatFoundObstacle == -1:
+            for robot in robotList:
+                if intel.device[robot].getState()["instructionID"] == 0:
+                    robotThatFoundObstacle = robot
+                    break
+        # Stop all other robots
+        robotsToStop = robotList.copy()
+        robotsToStop.remove(robotThatFoundObstacle)
+        for robot in robotsToStop:
+            intel.device[robot].flush()
+        # All other robots turn to face the obstacle
+        robotsToTurn = robotList.copy()
+        robotsToTurn.remove(robotThatFoundObstacle)
+        for robot in robotsToTurn:
+            if robot < robotThatFoundObstacle:
+                intel.device[robot].turnUntilObjectFound(angle=3600, angularSpeed=45, radius=0, objectName="bottle")
+            else:
+                intel.device[robot].turnUntilObjectFound(angle=-3600, angularSpeed=45, radius=0, objectName="bottle")
         for robot in robotList:
             intel.device[robot].waitUntilExecutingInstruction(0)
-        sleep(10)
+        sleep(1000)
 
 
 if __name__ == "__main__":

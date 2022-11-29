@@ -52,6 +52,28 @@ class StingrayCommander:
             },
         )
 
+    def turnUntilObjectFound(self, angle: float, angularSpeed: float, radius: float, objectName: str):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.MOVE_UNTIL_OBJECT_FOUND,
+            payload={
+                "instructionID": 2,
+                "rightWheelSpeed": abs(
+                    angularSpeed * (2 * pi / 360) * (radius - self.ROBOT_RADIUS / 2)
+                ),
+                "rightWheelDistance": angle
+                * (2 * pi / 360)
+                * (radius - self.ROBOT_RADIUS / 2),
+                "leftWheelSpeed": abs(
+                    angularSpeed * (2 * pi / 360) * (radius + self.ROBOT_RADIUS / 2)
+                ),
+                "leftWheelDistance": angle
+                * (2 * pi / 360)
+                * (radius + self.ROBOT_RADIUS / 2),
+                "object": objectName
+            },
+        )
+
     def move(self, distance: float, speed: float):
         self._commander.iothub_devicemethod(
             device_id=self._deviceID,
@@ -62,6 +84,34 @@ class StingrayCommander:
                 "rightWheelDistance": distance,
                 "leftWheelSpeed": abs(speed),
                 "leftWheelDistance": distance,
+            },
+        )
+
+    def moveUntilObjectFound(self, distance: float, speed: float, objectName: str):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.MOVE_UNTIL_OBJECT_FOUND,
+            payload={
+                "instructionID": 5,
+                "rightWheelSpeed": abs(speed),
+                "rightWheelDistance": distance,
+                "leftWheelSpeed": abs(speed),
+                "leftWheelDistance": distance,
+                "object:": objectName,
+            },
+        )
+
+    def moveUntilObstacleFound(self, distance: float, speed: float, obstacleDistance: float):
+        self._commander.iothub_devicemethod(
+            device_id=self._deviceID,
+            method_name=MethodName.MOVE_UNTIL_OBSTACLE_FOUND,
+            payload={
+                "instructionID": 5,
+                "rightWheelSpeed": abs(speed),
+                "rightWheelDistance": distance,
+                "leftWheelSpeed": abs(speed),
+                "leftWheelDistance": distance,
+                "obstacle_distance": obstacleDistance,
             },
         )
 
