@@ -1,6 +1,6 @@
 import threading
-from time import sleep
-from time import time
+from time import sleep, time
+
 from decouple import config
 
 from src.components.Encoder import Encoder

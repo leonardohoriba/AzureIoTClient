@@ -15,6 +15,7 @@ FORMAT = "utf-8"
 HEADER = 64
 # Sonar parameters
 SONAR_MAX_ECHO_PULSE_WIDTH = 30000  #microseconds
+SONAR_ANGLE_CALIBRATION = -12  #positive turns ccw when viewed from top
 # Camera resolution
 CAMERA_RESOLUTION_WIDTH = 640   #pixels
 CAMERA_RESOLUTION_HEIGHT = 480  #pixels

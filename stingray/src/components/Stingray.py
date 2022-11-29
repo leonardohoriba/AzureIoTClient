@@ -1,6 +1,5 @@
 from math import pi
-from time import sleep
-from time import time
+from time import sleep, time
 
 import pigpio
 
@@ -78,6 +77,13 @@ class Stingray:
         while (object not in [obj["name"] for obj in self.objectsOnCamera()]) and (
             self.leftMotor.getMoving() or self.rightMotor.getMoving()
         ):
+            sleep(0.01)
+
+    def waitUntilObstacle(self, obstacleDistance: float):
+        while (
+            (self.getSonarDistance() <= 0)
+            or (self.getSonarDistance() > obstacleDistance)
+        ) and (self.leftMotor.getMoving() or self.rightMotor.getMoving()):
             sleep(0.01)
 
     def stop(self):

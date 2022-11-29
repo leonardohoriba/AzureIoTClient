@@ -1,15 +1,14 @@
 import threading
 from queue import Empty
-from time import sleep
-from time import time
+from time import sleep, time
 
 import pigpio
 from decouple import config
 
 import settings
 from src.components.Stingray import Stingray
-from src.helpers.socket_client import SocketClient
 from src.helpers.direct_method_constants import MethodName
+from src.helpers.socket_client import SocketClient
 
 DEBUG_PID = bool(config("DEBUG_PID", default=False))
 raspi = pigpio.pi()
@@ -110,6 +109,15 @@ def main():
                 payload["rightWheelSpeed"],
             )
             robot.waitUntilObject(payload["object"])
+            robot.stop()
+        elif methodName == MethodName.MOVE_UNTIL_OBSTACLE_FOUND:
+            robot.moveDistanceSpeed(
+                payload["leftWheelDistance"],
+                payload["leftWheelSpeed"],
+                payload["rightWheelDistance"],
+                payload["rightWheelSpeed"],
+            )
+            robot.waitUntilObstacle(payload["obstacle_distance"])
             robot.stop()
 
     finished = True
