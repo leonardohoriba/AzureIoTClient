@@ -1,14 +1,15 @@
 import threading
-from time import sleep
+from time import sleep, time
+
+from decouple import config
 
 from src.components.Encoder import Encoder
 
+DEBUG_PID = bool(config("DEBUG_PID", default=False))
+
 
 class Motor:
-    _NUM_INTEGRAL_TERMS = 20
-
     def __init__(self, raspi, encoderInputPin, motorOutputPin):
-        self._error = [0] * self._NUM_INTEGRAL_TERMS
         self._goalTheta = 0
         self._goalOmega = 0
         self._currentGoalTheta = 0
@@ -23,6 +24,8 @@ class Motor:
         self._threadSpeed = threading.Thread(
             target=self.__speed, name="speed " + str(motorOutputPin)
         )
+
+    def init(self):
         self._threadControl.start()
         self._threadSpeed.start()
 
@@ -32,6 +35,9 @@ class Motor:
         self._threadSpeed.join()
         self.__setPower(0)
         del self._encoder
+
+    def setOtherMotor(self, otherMotor):
+        self._otherMotor = otherMotor
 
     def __setPower(self, power):
         # power ranging from -100 to 100
@@ -70,32 +76,36 @@ class Motor:
                 sleep(0.1)
 
     def __control(self):
+        ierror = 0
+        currentError = 0
         while not self._finished:
-            kp = -1
-            ki = 0
-            kd = 0
-            for i in range(self._NUM_INTEGRAL_TERMS - 1):
-                self._error[i] = self._error[i + 1]
-            self._error[self._NUM_INTEGRAL_TERMS - 1] = (
-                self._currentGoalTheta - self.getCurrentTheta()
-            )
-            derror = (
-                self._error[self._NUM_INTEGRAL_TERMS - 1]
-                - self._error[self._NUM_INTEGRAL_TERMS - 2]
-            )
-            # Integrate the last _NUM_INTEGRAL_TERMS, decaying the weight linearly
-            ierror = 0
-            for i in range(self._NUM_INTEGRAL_TERMS):
-                ierror += self._error[self._NUM_INTEGRAL_TERMS - (i + 1)] * (
-                    1 - (i / self._NUM_INTEGRAL_TERMS)
-                )
-            power = (
-                kp * self._error[self._NUM_INTEGRAL_TERMS - 1]
-                + ki * ierror
-                + kd * derror
-            )
-            self.__setPower(power)
-            sleep(0.025)
+            freq = 100
+            kp = 1.326 * -1
+            ki = 1.2546 / -freq
+            kd = 0.019635 * -freq
+
+            lastTime = time()
+            while time() - lastTime < 1 / freq:
+                sleep(0.0001)
+
+            lastError = currentError
+            # currentError = 0.1*self._currentGoalTheta - 0.9*self._otherMotor.getCurrentTheta() - self.getCurrentTheta()
+            currentError = self._currentGoalTheta - self.getCurrentTheta()
+            derror = currentError - lastError
+            ierror += currentError
+            if ierror < -100:
+                ierror = -100
+            elif ierror > 100:
+                ierror = 100
+
+            power = kp * currentError + ki * ierror + kd * derror
+            # if self._motorOutputPin == 23:
+            # print(f"error: {currentError}, ierror: {ierror}, derror:{derror}, power: {power}")
+            if DEBUG_PID:
+                # self.__setPower(self._goalOmega)
+                self.__setPower(power)
+            else:
+                self.__setPower(power)
 
     def setGoal(self, theta, omega):
         # Omega in absolute value

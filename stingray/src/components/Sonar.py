@@ -22,7 +22,7 @@ class Sonar:
         self._echoPin = echoPin
         self._motorPin = motorPin
         self._startTime = 0
-        self._deltaTime = 0
+        self._deltaTime = 30000
         self._raspi.set_mode(trigPin, pigpio.OUTPUT)
         self._raspi.set_mode(echoPin, pigpio.INPUT)
         self._raspi.set_mode(motorPin, pigpio.OUTPUT)
@@ -52,4 +52,5 @@ class Sonar:
 
     def setAngle(self, angle):
         if angle >= -100 and angle <= 100:
+            angle = angle + settings.SONAR_ANGLE_CALIBRATION
             self._raspi.set_servo_pulsewidth(self._motorPin, 1520 + angle * 900 / 90)

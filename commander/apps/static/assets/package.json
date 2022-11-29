@@ -1,0 +1,46 @@
+{
+    "name": "stingray-commander",
+    "version": "1.0.0",
+    "description": "Stingray Commander",
+    "main": "dashboards/default.html",
+    "directories": {
+        "example": "root"
+    },
+    "scripts": {
+        "open-app": "gulp open-app",
+        "start": "npm run open-app",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "watch": "gulp-watch"
+    },
+    "keywords": [
+        "bootstrap 5",
+        "dashboard",
+        "stingray"
+    ],
+    "author": "Leonardo Horiba <leonardohoriba@gmail.com> (https://github.com/ncctlab/ncct-stingray2)",
+    "license": "Free",
+    "bugs": {
+        "url": "https://github.com/ncctlab/ncct-stingray2"
+    },
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-autoprefixer": "^7.0.1",
+        "gulp-clean": "^0.4.0",
+        "gulp-install": "^1.1.0",
+        "gulp-sass": "^4.1.0",
+        "gulp-sourcemaps": "^2.6.5",
+        "gulp-open": "^3.0.1",
+        "gulp-clean-css": "4.2.0",
+        "gulp-cssbeautify": "1.0.1",
+        "gulp-file-include": "2.1.0",
+        "gulp-header": "2.0.7",
+        "gulp-htmlmin": "5.0.1",
+        "gulp-npm-dist": "^1.0.3",
+        "gulp-plumber": "1.2.1",
+        "gulp-rename": "1.4.0",
+        "gulp-uglify": "3.0.2",
+        "gulp-wait": "0.0.2",
+        "merge-stream": "2.0.0"
+    },
+    "homepage": "https://github.com/ncctlab/ncct-stingray2"
+}

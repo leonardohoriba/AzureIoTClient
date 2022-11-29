@@ -3,13 +3,12 @@ import time
 from src.helpers.commander import Commander
 from src.utils.direct_method_constants import DeviceID, MethodName
 
-
 # Example
 commander = Commander()
 
 ## Send direct method
 # commander.iothub_devicemethod(
-#     device_id=DeviceID.STINGRAY_29,
+#     device_id=DeviceID().STINGRAY_29,
 #     method_name=MethodName.SET_MOVEMENT,
 #     payload={
 #         "rightWheelSpeed": 10,
@@ -23,7 +22,7 @@ commander = Commander()
 commander.start()
 
 ## Get last telemetry from telemetry queue
-while(True):
+while True:
     time.sleep(5)
     telemetry = commander.getTelemetry()
 

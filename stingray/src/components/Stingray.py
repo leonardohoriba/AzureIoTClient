@@ -1,5 +1,5 @@
 from math import pi
-from time import sleep
+from time import sleep, time
 
 import pigpio
 
@@ -9,17 +9,23 @@ from src.components.Sonar import Sonar
 
 
 class Stingray:
-    WHEEL_RADIUS = 56.5 / 2  # Measured in mm
+    WHEEL_RADIUS = 54 / 2  # Measured in mm
 
     def __init__(self, raspi: pigpio.pi):
         self._raspi = raspi
+        self._flushed = False
         self.leftMotor = Motor(raspi, 17, 23)
         self.rightMotor = Motor(raspi, 27, 24)
+        self.leftMotor.setOtherMotor(self.rightMotor)
+        self.rightMotor.setOtherMotor(self.leftMotor)
+        self.leftMotor.init()
+        self.rightMotor.init()
         self.sonar = Sonar(raspi, 4, 18, 25)
         self.neuralnetwork = NeuralNetwork()
         self.neuralnetwork.startStreaming()
         self.leftPosition = 0
         self.rightPosition = 0
+        self._instructionID = 0
 
     def deinit(self):
         self.leftMotor.deinit()
@@ -31,6 +37,16 @@ class Stingray:
         del self.sonar
         del self.neuralnetwork
         self._raspi.stop()
+
+    def flushCallback(self):
+        self._flushed = True
+        self.stop()
+
+    def stopForTime(self, stopTime):
+        startTime = int(time())
+        while (time() - startTime < stopTime) and not self._flushed:
+            sleep(0.001)
+        self._flushed = False
 
     def moveDistanceSpeed(self, leftDistance, leftSpeed, rightDistance, rightSpeed):
         self.movePositionSpeed(
@@ -63,8 +79,16 @@ class Stingray:
         ):
             sleep(0.01)
 
+    def waitUntilObstacle(self, obstacleDistance: float):
+        while (
+            (self.getSonarDistance() <= 0)
+            or (self.getSonarDistance() > obstacleDistance)
+        ) and (self.leftMotor.getMoving() or self.rightMotor.getMoving()):
+            sleep(0.01)
+
     def stop(self):
-        self.leftPosition = self.leftMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
+        # One of the motors must have a negative angle, because they are mirrored
+        self.leftPosition = -self.leftMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
         self.rightPosition = self.rightMotor.stop() * 2 * pi * self.WHEEL_RADIUS / 360
 
     def waitUntilGoal(self):
@@ -89,6 +113,12 @@ class Stingray:
 
     def getRightWheelSpeed(self):
         return self.rightMotor.getCurrentOmega() * 2 * pi * self.WHEEL_RADIUS / 360
+
+    def setInstructionID(self, id: int):
+        self._instructionID = id
+
+    def getInstructionID(self) -> int:
+        return self._instructionID
 
     def triggerSonar(self):
         self.sonar.trigger()

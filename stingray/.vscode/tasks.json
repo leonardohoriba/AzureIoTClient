@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Stop robot",
+            "type": "shell",
+            "command": "python stop.py"
+        }
+    ]
+}

@@ -16,7 +16,9 @@ class SocketClient:
 
     _finished = False
 
-    def __init__(self) -> None:
+    def __init__(self, flushMethodName: str, flushCallback) -> None:
+        self._flushMethodName = flushMethodName
+        self._flushCallback = flushCallback
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.direct_method = queue.Queue()
         try:
@@ -57,13 +59,22 @@ class SocketClient:
             try:
                 self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.client.connect(self.ADDR)
-                self.__listen_stingrayd(self.client, self.ADDR)
+                self.threadDirectMethod = threading.Thread(
+                    target=self.__listen_stingrayd,
+                    args=(self.client, self.ADDR),
+                    name="directMethod",
+                )
+                self.threadDirectMethod.start()
                 print(f"[NEW CONNECTION] {self.ADDR}")
             except:
                 pass
 
     def getFromQueue(self):
-        return self.direct_method.get(block=False)
+        try:
+            directMethod = self.direct_method.get(block=False)
+            return directMethod
+        except queue.Empty:
+            return None
 
     def __listen_stingrayd(self, conn, addr):
         """Receive a direct method from stingrayd."""
@@ -76,8 +87,14 @@ class SocketClient:
                     message = conn.recv(msg_length).decode(self.FORMAT)
                     msg = json.loads(message)
                     print(f"Direct method received:\n{msg}")
-                    # Put message in direct method queue
-                    self.direct_method.put(msg)
+                    # Check if the instruction is to flush
+                    if msg["method_name"] == self._flushMethodName:
+                        # Flush the queue and call cancel callback function
+                        self.direct_method.queue.clear()
+                        self._flushCallback()
+                    else:
+                        # Put message in direct method queue
+                        self.direct_method.put(msg)
                 elif msg_length == "":
                     print("Stingrayd disconnected.")
                     break

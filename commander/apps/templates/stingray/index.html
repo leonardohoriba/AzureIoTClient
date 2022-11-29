@@ -1,0 +1,542 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container-fluid py-4">
+      <div class="col mt-4 d-flex justify-content-between">
+        <form action='start_button' method='GET' id="start_button">
+          <div class="col-md-6">
+            <button type='submit' class="btn btn-outline-primary btn-sm mb-0">Start</button>
+          </div>
+        </form>
+        <form action='stop_button' method='GET' id="stop_button">
+          <div class="col-md-6">
+            <button type='submit' class="btn btn-outline-secondary btn-sm mb-0">Stop</button>
+          </div>
+        </form>
+        
+        {% comment %} <div class="col-md-6">
+          <button class="btn btn-outline-primary btn-sm mb-0" id="start_button" onClick="startButton()">Start</button>
+        </div>
+        <div class="col-md-6 text-right">
+          <button class="btn btn-outline-secondary btn-sm mb-0" id="stop_button" onClick="stopButton()">Stop</button>
+        </div> {% endcomment %}
+      </div>
+      <div class="row mt-4">
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Instruction ID</p>
+                    <h5 class="font-weight-bolder" id="instruction_id"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Left Wheel Position</p>
+                    <h5 class="font-weight-bolder" id="left_wheel_position"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Right Wheel Position</p>
+                    <h5 class="font-weight-bolder" id="right_wheel_position"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Left Wheel Speed</p>
+                    <h5 class="font-weight-bolder" id="left_wheel_speed"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Right Wheel Speed</p>
+                    <h5 class="font-weight-bolder" id="right_wheel_speed"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-10">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Sonar Distance</p>
+                    <h5 class="font-weight-bolder" id="sonar_distance"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header pb-0">
+              <h6>Position (mm)</h6>
+            </div>
+            <div class="card-body p-3">
+              <div class="chart">
+                <canvas id="position_graph" class="chart-canvas" height="300px"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header pb-0">
+              <h6>Speed (mm/s)</h6>
+            </div>
+            <div class="card-body p-3">
+              <div class="chart">
+                <canvas id="speed_graph" class="chart-canvas" height="300px"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header pb-0">
+              <h6>Sonar (mm)</h6>
+            </div>
+            <div class="card-body p-3">
+              <div class="chart">
+                <canvas id="sonar_graph" class="chart-canvas" height="300px"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row my-4">
+        <div class="col-lg-3 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+              <div class="col-lg-9 col-7">
+                <h6>Detected Objects</h6>
+              </div>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Object</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Confidence</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detected_objects">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include "includes/footer.html" %}
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+  <script src="/static/assets/js/plugins/chartjs.min.js"></script>
+  <script src="/static/assets/js/plugins/Chart.extension.js"></script>
+  <script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+
+  <script type="text/javascript">
+    let url = `ws://${window.location.host}/ws/socket-server/`
+
+    const chatSocket = new WebSocket(url)
+
+    chatSocket.onmessage = function(e){
+        let data = JSON.parse(e.data)
+        console.log('Data:', data)
+
+        if(data.deviceID === "{{ device }}"){
+
+            let body = data.body.body
+            // Cards
+            document.getElementById('instruction_id').innerHTML = `${body.instructionID}`
+            document.getElementById('left_wheel_position').innerHTML = `${body.leftWheelPosition.toFixed(2)} mm`
+            document.getElementById('right_wheel_position').innerHTML = `${body.rightWheelPosition.toFixed(2)} mm`
+            document.getElementById('left_wheel_speed').innerHTML = `${body.leftWheelSpeed.toFixed(2)} mm/s`
+            document.getElementById('right_wheel_speed').innerHTML = `${body.rightWheelSpeed.toFixed(2)} mm/s`
+            document.getElementById('sonar_distance').innerHTML = `${body.sonarDistance.toFixed(2)} mm`
+            // Detected Objects
+            let detected_objects = ""
+            body.detectedObjectList.forEach(object => {
+              detected_objects +=
+              `<tr>
+                <td>
+                  <div class="d-flex px-2 py-1">
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="mb-0 text-sm">${object.name}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-sm">
+                  <span class="text-xs font-weight-bold">${object.confidence.toFixed(2)}</span>
+                </td>
+              </tr>`
+            })
+            document.getElementById('detected_objects').innerHTML = detected_objects
+
+            //--  Graphs
+
+            // Position
+            var position_graph = document.getElementById("position_graph").getContext("2d");
+
+            var gradientStroke1 = position_graph.createLinearGradient(0, 230, 0, 50);
+
+            gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
+            gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+            gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+            var gradientStroke2 = position_graph.createLinearGradient(0, 230, 0, 50);
+
+            gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
+            gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+            gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
+
+
+            new Chart(position_graph, {
+              type: "line",
+              data: {
+                labels: new Array(100).fill(0),
+                datasets: [{
+                    label: "Left Wheel Position (mm)",
+                    tension: 0.4,
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    borderColor: "#cb0c9f",
+                    borderWidth: 3,
+                    backgroundColor: gradientStroke1,
+                    data: body["queues"]["leftWheelPosition"],
+                    maxBarThickness: 6
+
+                  },
+                  {
+                    label: "Right Wheel Position (mm)",
+                    tension: 0.4,
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    borderColor: "#3A416F",
+                    borderWidth: 3,
+                    backgroundColor: gradientStroke2,
+                    data: body["queues"]["rightWheelPosition"],
+                    maxBarThickness: 6
+                  },
+                ],
+              },
+              options: {
+                animation: false,
+                maintainAspectRatio: false,
+                legend: {
+                  display: false,
+                },
+                tooltips: {
+                  enabled: true,
+                  mode: "index",
+                  intersect: false,
+                },
+                scales: {
+                  yAxes: [{
+                    gridLines: {
+                      borderDash: [2],
+                      borderDashOffset: [2],
+                      color: '#dee2e6',
+                      zeroLineColor: '#dee2e6',
+                      zeroLineWidth: 1,
+                      zeroLineBorderDash: [2],
+                      drawBorder: false,
+                    },
+                    ticks: {
+                      suggestedMin: 0,
+                      suggestedMax: 500,
+                      beginAtZero: true,
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                    },
+                  }, ],
+                  xAxes: [{
+                    gridLines: {
+                      zeroLineColor: 'rgba(0,0,0,0)',
+                      display: false,
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
+                    },
+                    ticks: {
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                      display: false
+                    },
+                  }, ],
+                },
+              },
+            });
+            
+            // Speed
+            var speed_graph = document.getElementById("speed_graph").getContext("2d");
+
+            var gradientStroke3 = speed_graph.createLinearGradient(0, 230, 0, 50);
+
+            gradientStroke3.addColorStop(1, 'rgba(203,12,159,0.2)');
+            gradientStroke3.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+            gradientStroke3.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+            var gradientStroke4 = speed_graph.createLinearGradient(0, 230, 0, 50);
+
+            gradientStroke4.addColorStop(1, 'rgba(20,23,39,0.2)');
+            gradientStroke4.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+            gradientStroke4.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
+
+
+            new Chart(speed_graph, {
+              type: "line",
+              data: {
+                labels: new Array(100).fill(0),
+                datasets: [{
+                    label: "Left Wheel Speed (mm/s)",
+                    tension: 0.4,
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    borderColor: "#cb0c9f",
+                    borderWidth: 3,
+                    backgroundColor: gradientStroke1,
+                    data: body["queues"]["leftWheelSpeed"],
+                    maxBarThickness: 6
+
+                  },
+                  {
+                    label: "Right Wheel Speed (mm/s)",
+                    tension: 0.4,
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    borderColor: "#3A416F",
+                    borderWidth: 3,
+                    backgroundColor: gradientStroke2,
+                    data: body["queues"]["rightWheelSpeed"],
+                    maxBarThickness: 6
+                  },
+                ],
+              },
+              options: {
+                animation: false,
+                maintainAspectRatio: false,
+                legend: {
+                  display: false,
+                },
+                tooltips: {
+                  enabled: true,
+                  mode: "index",
+                  intersect: false,
+                },
+                scales: {
+                  yAxes: [{
+                    gridLines: {
+                      borderDash: [2],
+                      borderDashOffset: [2],
+                      color: '#dee2e6',
+                      zeroLineColor: '#dee2e6',
+                      zeroLineWidth: 1,
+                      zeroLineBorderDash: [2],
+                      drawBorder: false,
+                    },
+                    ticks: {
+                      suggestedMin: -500,
+                      suggestedMax: 500,
+                      beginAtZero: true,
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                    },
+                  }, ],
+                  xAxes: [{
+                    gridLines: {
+                      zeroLineColor: 'rgba(0,0,0,0)',
+                      display: false,
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
+                    },
+                    ticks: {
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                      display: false
+                    },
+                  }, ],
+                },
+              },
+            });
+
+            // Sonar
+            var sonar_graph = document.getElementById("sonar_graph").getContext("2d");
+
+            var gradientStroke5 = sonar_graph.createLinearGradient(0, 230, 0, 50);
+
+            gradientStroke5.addColorStop(1, 'rgba(203,12,159,0.2)');
+            gradientStroke5.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+            gradientStroke5.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+            new Chart(sonar_graph, {
+              type: "line",
+              data: {
+                labels: new Array(100).fill(0),
+                datasets: [{
+                    label: "Sonar Distance (mm)",
+                    tension: 0.4,
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    borderColor: "#cb0c9f",
+                    borderWidth: 3,
+                    backgroundColor: gradientStroke1,
+                    data: body["queues"]["sonarDistance"],
+                    maxBarThickness: 6
+
+                  }
+                ],
+              },
+              options: {
+                animation: false,
+                maintainAspectRatio: false,
+                legend: {
+                  display: false,
+                },
+                tooltips: {
+                  enabled: true,
+                  mode: "index",
+                  intersect: false,
+                },
+                scales: {
+                  yAxes: [{
+                    gridLines: {
+                      borderDash: [2],
+                      borderDashOffset: [2],
+                      color: '#dee2e6',
+                      zeroLineColor: '#dee2e6',
+                      zeroLineWidth: 1,
+                      zeroLineBorderDash: [2],
+                      drawBorder: false,
+                    },
+                    ticks: {
+                      suggestedMin: 0,
+                      suggestedMax: 500,
+                      beginAtZero: true,
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                    },
+                  }, ],
+                  xAxes: [{
+                    gridLines: {
+                      zeroLineColor: 'rgba(0,0,0,0)',
+                      display: false,
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
+                    },
+                    ticks: {
+                      padding: 10,
+                      fontSize: 11,
+                      fontColor: '#adb5bd',
+                      lineHeight: 3,
+                      fontStyle: 'normal',
+                      fontFamily: "Open Sans",
+                      display: false
+                    },
+                  }, ],
+                },
+              },
+            });
+
+        }
+    }
+
+
+    
+
+</script>
+
+{% endblock javascripts %}
