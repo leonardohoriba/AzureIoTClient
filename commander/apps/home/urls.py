@@ -3,7 +3,7 @@ from django.urls import include, path, re_path
 from apps.home import views
 from src.utils.direct_method_constants import DeviceID
 
-device_list = DeviceID.getDevices()
+device_list = DeviceID().getDevices()
 
 urlpatterns = [
     # The home page
