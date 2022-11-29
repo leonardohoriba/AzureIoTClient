@@ -116,6 +116,12 @@
 - Open VS Code:  
 `code .`
 - Trust the folder authors
+#### `.env` file cration
+- Create `.env` file from `.env_example`
+- Go to [Azure Portal](https://portal.azure.com/#home)
+- Open your Azure IoT Hub resource.
+- Select `Built-in endpoints`
+- Copy your `Event hub-compatible endpoint` string into the `.env` file
 - Now you have the VS Code workspace configured for Commander development
 
 ## Network Configuration
