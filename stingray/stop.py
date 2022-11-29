@@ -1,6 +1,5 @@
 import pigpio
 
-
 print("Stopping robot")
 raspi = pigpio.pi()
 raspi.set_servo_pulsewidth(23, 0)
