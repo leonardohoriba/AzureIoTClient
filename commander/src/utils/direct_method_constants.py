@@ -7,6 +7,7 @@ class MethodName:
     DISCONNECT = "disconnect"
     STOP_FOR_TIME = "stopForTime"
     MOVE_UNTIL_OBJECT_FOUND = "moveUntilObjectFound"
+    MOVE_UNTIL_OBSTACLE_FOUND = "moveUntilObstacleFound"
 
 
 class DeviceID:
