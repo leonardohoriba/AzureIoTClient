@@ -3,7 +3,7 @@ from django.template import loader
 from src.utils.direct_method_constants import DeviceID
 from src.helpers.socket_client import SocketClient
 
-device_list = DeviceID.getDevices()
+device_list = DeviceID().getDevices()
 
 def index(request):
     device_id = request.path.split("/")[1]

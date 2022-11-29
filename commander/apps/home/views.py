@@ -6,18 +6,19 @@ from django.urls import reverse
 from src.utils.direct_method_constants import DeviceID
 from src.helpers.socket_client import SocketClient
 
-device_list = DeviceID.getDevices()
+deviceID = DeviceID()
+device_list = deviceID.getDevices()
 
 # @login_required(login_url="/login/")
 def index(request):
     context = {"segment": device_list[0]}
-    context["devices"] = DeviceID.getDevices()
+    context["devices"] = deviceID.getDevices()
 
     html_template = loader.get_template("stingray/index.html")
     return HttpResponse(html_template.render(context, request))
 # def index(request):
 #     context = {"segment": "index"}
-#     context["devices"] = DeviceID.getDevices()
+#     context["devices"] = deviceID.getDevices()
 
 #     html_template = loader.get_template("home/index.html")
 #     return HttpResponse(html_template.render(context, request))
@@ -25,7 +26,7 @@ def index(request):
 # @login_required(login_url="/login/")
 def stingray(request):
     context = {"segment": "stingray"}
-    context["devices"] = DeviceID.getDevices()
+    context["devices"] = deviceID.getDevices()
 
     html_template = loader.get_template("home/stingray.html")
     return HttpResponse(html_template.render(context, request))
@@ -72,7 +73,7 @@ def pages(request):
         load_template = request.path.split("/")[-1]
 
         context["segment"] = load_template
-        context["devices"] = DeviceID.getDevices()
+        context["devices"] = deviceID.getDevices()
 
         if load_template == "admin":
             return HttpResponseRedirect(reverse("admin:index"))

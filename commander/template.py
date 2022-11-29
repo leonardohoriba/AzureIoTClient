@@ -8,7 +8,7 @@ commander = Commander()
 
 ## Send direct method
 # commander.iothub_devicemethod(
-#     device_id=DeviceID.STINGRAY_29,
+#     device_id=DeviceID().STINGRAY_29,
 #     method_name=MethodName.SET_MOVEMENT,
 #     payload={
 #         "rightWheelSpeed": 10,

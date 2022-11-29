@@ -117,7 +117,7 @@
         <div class="col-lg-7">
           <div class="card">
             <div class="card-header pb-0">
-              <h6>Position</h6>
+              <h6>Position (mm)</h6>
             </div>
             <div class="card-body p-3">
               <div class="chart">
@@ -131,7 +131,7 @@
         <div class="col-lg-7">
           <div class="card">
             <div class="card-header pb-0">
-              <h6>Speed</h6>
+              <h6>Speed (mm/s)</h6>
             </div>
             <div class="card-body p-3">
               <div class="chart">
@@ -145,7 +145,7 @@
         <div class="col-lg-7">
           <div class="card">
             <div class="card-header pb-0">
-              <h6>Sonar</h6>
+              <h6>Sonar (mm)</h6>
             </div>
             <div class="card-body p-3">
               <div class="chart">
@@ -264,7 +264,7 @@
               data: {
                 labels: new Array(100).fill(0),
                 datasets: [{
-                    label: "Left Wheel Position",
+                    label: "Left Wheel Position (mm)",
                     tension: 0.4,
                     borderWidth: 0,
                     pointRadius: 0,
@@ -276,7 +276,7 @@
 
                   },
                   {
-                    label: "Right Wheel Position",
+                    label: "Right Wheel Position (mm)",
                     tension: 0.4,
                     borderWidth: 0,
                     pointRadius: 0,
@@ -327,6 +327,10 @@
                       zeroLineColor: 'rgba(0,0,0,0)',
                       display: false,
                     },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
+                    },
                     ticks: {
                       padding: 10,
                       fontSize: 11,
@@ -362,7 +366,7 @@
               data: {
                 labels: new Array(100).fill(0),
                 datasets: [{
-                    label: "Left Wheel Speed",
+                    label: "Left Wheel Speed (mm/s)",
                     tension: 0.4,
                     borderWidth: 0,
                     pointRadius: 0,
@@ -374,7 +378,7 @@
 
                   },
                   {
-                    label: "Right Wheel Speed",
+                    label: "Right Wheel Speed (mm/s)",
                     tension: 0.4,
                     borderWidth: 0,
                     pointRadius: 0,
@@ -425,6 +429,10 @@
                       zeroLineColor: 'rgba(0,0,0,0)',
                       display: false,
                     },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
+                    },
                     ticks: {
                       padding: 10,
                       fontSize: 11,
@@ -453,7 +461,7 @@
               data: {
                 labels: new Array(100).fill(0),
                 datasets: [{
-                    label: "Sonar Distance",
+                    label: "Sonar Distance (mm)",
                     tension: 0.4,
                     borderWidth: 0,
                     pointRadius: 0,
@@ -504,6 +512,10 @@
                     gridLines: {
                       zeroLineColor: 'rgba(0,0,0,0)',
                       display: false,
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'time (s)'
                     },
                     ticks: {
                       padding: 10,

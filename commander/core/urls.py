@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import include, path  # add this
 from src.utils.direct_method_constants import DeviceID
 
-device_list = DeviceID.getDevices()
+device_list = DeviceID().getDevices()
 
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin route

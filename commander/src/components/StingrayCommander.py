@@ -10,7 +10,7 @@ class StingrayCommander:
 
     def __init__(self, commander: Commander, robotNumber: int):
         self._commander = commander
-        self._deviceID = DeviceID.getDeviceIdFromNumber(robotNumber)
+        self._deviceID = DeviceID().getDeviceIdFromNumber(robotNumber)
         self.telemetryStarted = False
         self._state = {
             "instructionID": -1,

@@ -42,7 +42,7 @@ class Intelligence:
             if telemetry is None:
                 sleep(0.001)
                 continue
-            deviceNumber = DeviceID.getNumberFromDeviceId(telemetry["deviceID"])
+            deviceNumber = DeviceID().getNumberFromDeviceId(telemetry["deviceID"])
             if deviceNumber in self._deviceNumberList:
                 self.device[deviceNumber].telemetryStarted = True
                 self.device[deviceNumber].telemetryCallback(telemetry["body"])
