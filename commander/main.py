@@ -4,7 +4,7 @@ from time import sleep
 from src.components.intelligence import Intelligence
 from src.helpers.graphing import Graphing
 
-robotList = [29]
+robotList = [1, 2, 29, 30]
 
 graph = Graphing(numPlots=2, numPoints=20)
 intel = Intelligence(deviceNumberList=robotList, graph=graph)
